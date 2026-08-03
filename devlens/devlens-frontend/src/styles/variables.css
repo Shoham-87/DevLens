@@ -1,0 +1,47 @@
+:root {
+  /* Colors */
+  --dl-primary:        #4F46E5;
+  --dl-primary-dark:   #3730A3;
+  --dl-primary-light:  #6366F1;
+  --dl-accent:         #10B981;
+  --dl-purple:         #7C3AED;
+
+  /* Backgrounds */
+  --dl-bg-base:        #070B14;
+  --dl-bg-surface:     #0D1117;
+  --dl-bg-elevated:    #111827;
+  --dl-bg-card:        rgba(13, 17, 30, 0.88);
+
+  /* Borders */
+  --dl-border-subtle:  rgba(99, 102, 241, 0.12);
+  --dl-border-default: rgba(99, 102, 241, 0.22);
+  --dl-border-strong:  rgba(99, 102, 241, 0.45);
+
+  /* Text */
+  --dl-text-primary:   #F9FAFB;
+  --dl-text-secondary: #9CA3AF;
+  --dl-text-muted:     #6B7280;
+  --dl-text-faint:     #374151;
+
+  /* Fonts */
+  --dl-font-display: 'Syne', sans-serif;
+  --dl-font-mono:    'JetBrains Mono', monospace;
+
+  /* Spacing */
+  --dl-space-xs:  4px;
+  --dl-space-sm:  8px;
+  --dl-space-md:  16px;
+  --dl-space-lg:  24px;
+  --dl-space-xl:  40px;
+
+  /* Radii */
+  --dl-radius-sm:   6px;
+  --dl-radius-md:   10px;
+  --dl-radius-lg:   14px;
+  --dl-radius-xl:   20px;
+  --dl-radius-pill: 9999px;
+
+  /* Shadows */
+  --dl-shadow-card: 0 0 0 1px rgba(99,102,241,0.05), 0 32px 64px rgba(0,0,0,0.6);
+  --dl-shadow-glow: 0 8px 24px rgba(79, 70, 229, 0.4);
+}

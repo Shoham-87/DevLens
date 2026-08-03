@@ -1,3 +1,29 @@
 spring:
   application:
-    name: devlens
+    name: Devlens
+  data:
+    mongodb:
+      host: localhost
+      uri: mongodb://localhost:27017
+      database: devlens_transactional
+  security:
+    user:
+      name: admin
+      password: admin123
+    oauth2.client.registration:
+      github:
+        client-id: ${GITHUB_CLIENT_ID}
+        client-secret: ${GITHUB_CLIENT_SECRET}
+
+
+
+server:
+  port: 8083
+
+devlens:
+  jwt:
+    secret-key: ${JWT_SECRET_KEY}
+    access-token-time-span: 900000
+    refresh-token-time-span: 604800000
+  frontend:
+    url: http://localhost:5173

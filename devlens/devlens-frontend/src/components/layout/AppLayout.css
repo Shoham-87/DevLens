@@ -1,0 +1,16 @@
+.dl-layout {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  background-color: var(--dl-bg-base);
+}
+
+.dl-layout__body {
+  flex: 1;
+  overflow: hidden;
+}
+
+.dl-layout__main {
+  background-color: var(--dl-bg-base);
+  padding: var(--dl-space-xl);
+}

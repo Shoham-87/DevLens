@@ -1,0 +1,127 @@
+@keyframes bgPulse {
+  0%, 100% { opacity: 0.6; }
+  50%       { opacity: 1; }
+}
+
+.login-page {
+  min-height: 100vh;
+  background-color: var(--dl-bg-base);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.login-page__glow {
+  position: absolute;
+  width: 600px;
+  height: 600px;
+  border-radius: var(--dl-radius-pill);
+  background: radial-gradient(circle, rgba(79, 70, 229, 0.15) 0%, transparent 70%);
+  pointer-events: none;
+  animation: bgPulse 6s ease-in-out infinite;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.login-card {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  max-width: 420px;
+  padding: var(--dl-space-xl);
+  background: var(--dl-bg-card);
+  border: 1px solid var(--dl-border-default);
+  border-radius: var(--dl-radius-xl);
+  box-shadow: var(--dl-shadow-card);
+  backdrop-filter: blur(12px);
+}
+
+.login-card__logo {
+  display: flex;
+  align-items: center;
+  gap: var(--dl-space-sm);
+  margin-bottom: var(--dl-space-xl);
+}
+
+.login-card__logo-icon {
+  font-size: 2rem;
+  color: var(--dl-primary-light);
+}
+
+.login-card__logo-text {
+  font-family: var(--dl-font-display);
+  font-size: 1.6rem;
+  font-weight: 800;
+  color: var(--dl-text-primary);
+  letter-spacing: -0.03em;
+}
+
+.login-card__title {
+  font-family: var(--dl-font-display);
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--dl-text-primary);
+  margin-bottom: var(--dl-space-sm);
+  letter-spacing: -0.02em;
+}
+
+.login-card__subtitle {
+  font-size: 0.9rem;
+  color: var(--dl-text-secondary);
+  margin-bottom: var(--dl-space-xl);
+  line-height: 1.6;
+}
+
+.login-card__github-btn {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--dl-space-sm);
+  padding: 0.75rem var(--dl-space-lg);
+  background-color: var(--dl-bg-elevated);
+  border: 1px solid var(--dl-border-default);
+  border-radius: var(--dl-radius-md);
+  color: var(--dl-text-primary);
+  font-family: var(--dl-font-display);
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s, box-shadow 0.15s;
+}
+
+.login-card__github-btn:hover:not(:disabled) {
+  background-color: #1c2128;
+  border-color: var(--dl-border-strong);
+  box-shadow: var(--dl-shadow-glow);
+}
+
+.login-card__github-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.login-card__github-icon {
+  width: 20px;
+  height: 20px;
+}
+
+.login-card__error {
+  margin-top: var(--dl-space-md);
+  padding: var(--dl-space-sm) var(--dl-space-md);
+  background-color: rgba(239, 68, 68, 0.1);
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  border-radius: var(--dl-radius-md);
+  color: #FCA5A5;
+  font-size: 0.85rem;
+}
+
+.login-card__footer {
+  margin-top: var(--dl-space-lg);
+  text-align: center;
+  font-size: 0.78rem;
+  color: var(--dl-text-muted);
+}

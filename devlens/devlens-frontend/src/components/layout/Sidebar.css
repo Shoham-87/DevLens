@@ -1,0 +1,103 @@
+.dl-sidebar {
+  width: 220px;
+  min-width: 220px;
+  background-color: var(--dl-bg-surface);
+  border-right: 1px solid var(--dl-border-subtle);
+  padding: var(--dl-space-md) 0;
+  height: calc(100vh - 56px);
+  overflow-y: auto;
+}
+
+.dl-sidebar__nav {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 0 var(--dl-space-sm);
+}
+
+.dl-sidebar__nav-item {
+  display: flex;
+  align-items: center;
+  gap: var(--dl-space-sm);
+  padding: var(--dl-space-sm) var(--dl-space-md);
+  border-radius: var(--dl-radius-md);
+  color: var(--dl-text-secondary);
+  font-size: 0.875rem;
+  font-weight: 500;
+  text-decoration: none;
+  transition: background 0.15s, color 0.15s;
+}
+
+.dl-sidebar__nav-item:hover {
+  background-color: var(--dl-bg-elevated);
+  color: var(--dl-text-primary);
+}
+
+.dl-sidebar__nav-item--active {
+  background-color: rgba(79, 70, 229, 0.12);
+  color: var(--dl-primary-light);
+}
+
+.dl-sidebar__nav-item--disabled {
+  opacity: 0.4;
+  pointer-events: none;
+}
+
+.dl-sidebar__nav-icon {
+  font-size: 0.9rem;
+  width: 16px;
+  text-align: center;
+}
+
+.dl-sidebar__repos {
+  margin-top: var(--dl-space-lg);
+  padding: 0 var(--dl-space-sm);
+}
+
+.dl-sidebar__repos-label {
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--dl-text-muted);
+  padding: 0 var(--dl-space-md);
+  margin-bottom: var(--dl-space-sm);
+}
+
+.dl-sidebar__repo-item {
+  display: flex;
+  align-items: center;
+  gap: var(--dl-space-sm);
+  padding: var(--dl-space-xs) var(--dl-space-md);
+  border-radius: var(--dl-radius-sm);
+  color: var(--dl-text-secondary);
+  font-size: 0.8rem;
+  font-family: var(--dl-font-mono);
+  text-decoration: none;
+  transition: background 0.15s, color 0.15s;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.dl-sidebar__repo-item:hover {
+  background-color: var(--dl-bg-elevated);
+  color: var(--dl-text-primary);
+}
+
+.dl-sidebar__repo-item--active {
+  background-color: rgba(79, 70, 229, 0.1);
+  color: var(--dl-text-primary);
+}
+
+.dl-sidebar__status-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: var(--dl-radius-pill);
+  flex-shrink: 0;
+}
+
+.dl-sidebar__repo-name {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
