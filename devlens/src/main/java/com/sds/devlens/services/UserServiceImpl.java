@@ -32,7 +32,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public Users findOrCreateUser(OAuth2User oauth2User) {
+    public Users findOrCreateUser(OAuth2User oauth2User, String githubAccessToken) {
         Long githubUserId = Optional.ofNullable(oauth2User.getAttribute("id"))
                 .map(Object::toString)
                 .map(Long::valueOf)
@@ -56,6 +56,7 @@ public class UserServiceImpl implements UserService {
         String emailAddress = getAttributeFromObjectElseEmpty(oauth2User.getAttribute("email")).toString();
         String avatarUrl = getAttributeFromObjectElseEmpty(oauth2User.getAttribute("avatar_url")).toString();
         users.setGithubId(githubUserId);
+        users.setGithubAccessToken(githubAccessToken);
         users.setUsername(username);
         users.setAvatarUrl(avatarUrl);
         users.setEmailAddress(emailAddress);
@@ -68,5 +69,9 @@ public class UserServiceImpl implements UserService {
         return jwtUtils.generateAccessToken(userId,githubId);
     }
 
+    @Override
+    public Users findUserByUserId(String userId){
+        return usersRepository.findById(userId).orElseGet(Users::new);
+    }
 
 }

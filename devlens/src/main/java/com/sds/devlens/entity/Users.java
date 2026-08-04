@@ -40,4 +40,7 @@ public class Users {
     @Field("last_login_at")
     private Instant lastLoginAt;
 
+    @Field("github_access_token")
+    private String githubAccessToken;
+
 }
