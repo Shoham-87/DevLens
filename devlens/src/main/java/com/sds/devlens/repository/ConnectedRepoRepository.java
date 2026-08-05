@@ -9,4 +9,6 @@ import java.util.List;
 @Repository
 public interface ConnectedRepoRepository extends MongoRepository<ConnectedRepo,String> {
     public List<ConnectedRepo> findByUserId(String userId);
+    public ConnectedRepo findByUserIdAndGithubRepoId(String userId,Long githubRepoId);
+    public ConnectedRepo findByIdAndUserId(String id,String userId);
 }

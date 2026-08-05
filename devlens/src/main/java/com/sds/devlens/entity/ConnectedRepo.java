@@ -11,7 +11,7 @@ import org.springframework.data.mongodb.core.mapping.Field;
 
 import java.time.Instant;
 
-@Document
+@Document(collection = "connectedRepo")
 @Data
 @AllArgsConstructor
 @NoArgsConstructor

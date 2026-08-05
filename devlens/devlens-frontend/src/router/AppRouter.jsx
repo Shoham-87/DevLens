@@ -33,7 +33,7 @@ const router = createBrowserRouter([
     ),
   },
   {
-    path: '/repos/:repoId',
+    path: ROUTES.REPO_DETAIL(':repoId'),
     element: (
       <ProtectedRoute>
         <RepoDetailPage />
