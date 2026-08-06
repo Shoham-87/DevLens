@@ -124,7 +124,7 @@ export default function RepoDetailPage() {
               </div>
               <div className="d-flex gap-2">
                 <a
-                  href={`https://github.com/${repo.name}`}
+                  href={repo.repoUrl}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="rd-github-btn"

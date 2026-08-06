@@ -1,5 +1,6 @@
 package com.sds.devlens.controllers;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.sds.devlens.dto.ConnectRepoRequest;
 import com.sds.devlens.dto.ConnectedRepoDTO;
 import com.sds.devlens.dto.RepoDTO;
@@ -114,6 +115,37 @@ public class RepoController {
                 "filesProcessed",  existingConnectedRepo.get().getFilesProcessed(),
                 "totalFiles",      existingConnectedRepo.get().getTotalFiles(),
                 "chunksCreated",   existingConnectedRepo.get().getChunksCreated()
+        ));
+    }
+
+    @GetMapping("/repos/{repoId}")
+    public ResponseEntity<?> getRepoDetail(Authentication authentication,@PathVariable String repoId) {
+        String userId = (String) authentication.getPrincipal();
+        Users user = userService.findUserByUserId(userId);
+        Optional<ConnectedRepo> connectedRepo = connectedRepoService.findByIdAndUserId(repoId,userId);
+        if(connectedRepo.isEmpty())
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No Repositories are Found");
+        ConnectedRepo repo = connectedRepo.get();
+        JsonNode githubMetaData = gitHubApiClient.fetchRepoMetadata(user.getGithubAccessToken(),
+                user.getUsername(),repo.getName());
+
+        boolean isReady = "READY".equals(repo.getStatus());
+
+        return ResponseEntity.ok(Map.of(
+                "id",            repo.getId(),
+                "name",          repo.getName(),
+                "language",      repo.getLanguage() != null ? repo.getLanguage() : "",
+                "status",        repo.getStatus(),
+                "connectedAt",   repo.getConnectedAt(),
+                "description",   githubMetaData.path("description").asText(""),
+                "stars",         githubMetaData.path("stargazers_count").asInt(0),
+                "defaultBranch", githubMetaData.path("default_branch").asText("main"),
+                "features", Map.of(
+                        "chatEnabled",     isReady,
+                        "recsEnabled",     isReady,
+                        "prReviewEnabled", isReady
+                ),
+                "repoUrl", "https://github.com/" + user.getUsername() + "/" + repo.getName()
         ));
     }
 
