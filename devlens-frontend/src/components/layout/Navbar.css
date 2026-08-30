@@ -1,5 +1,5 @@
 .dl-navbar {
-  height: 56px;
+  height: 60px;
   background-color: var(--dl-bg-surface);
   border-bottom: 1px solid var(--dl-border-subtle);
   position: sticky;
@@ -8,16 +8,15 @@
 }
 
 .dl-navbar__logo-icon {
-  font-size: 1.4rem;
-  color: var(--dl-primary-light);
+  font-size: 1.2rem;
+  color: var(--dl-primary);
 }
 
 .dl-navbar__logo-text {
   font-family: var(--dl-font-display);
-  font-weight: 800;
-  font-size: 1.1rem;
+  font-weight: 600;
+  font-size: 1.15rem;
   color: var(--dl-text-primary);
-  letter-spacing: -0.02em;
 }
 
 .dl-navbar__avatar {
@@ -30,5 +29,6 @@
 .dl-navbar__username {
   font-size: 0.85rem;
   color: var(--dl-text-secondary);
-  font-family: var(--dl-font-display);
+  font-family: var(--dl-font-sans);
+  font-weight: 500;
 }

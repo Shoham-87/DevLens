@@ -4,10 +4,10 @@ import { ROUTES, REPO_STATUS } from '../../constants/index.js';
 import './Sidebar.css';
 
 const STATUS_DOT_COLOR = {
-  [REPO_STATUS.PENDING]:  '#FBBF24',
-  [REPO_STATUS.INDEXING]: '#6366F1',
-  [REPO_STATUS.READY]:    '#10B981',
-  [REPO_STATUS.FAILED]:   '#EF4444',
+  [REPO_STATUS.PENDING]:  'var(--dl-status-pending)',
+  [REPO_STATUS.INDEXING]: 'var(--dl-status-indexing)',
+  [REPO_STATUS.READY]:    'var(--dl-status-ready)',
+  [REPO_STATUS.FAILED]:   'var(--dl-status-failed)',
 };
 
 export default function Sidebar({ connectedRepos = [], activeRoute }) {
@@ -52,7 +52,7 @@ export default function Sidebar({ connectedRepos = [], activeRoute }) {
                 >
                   <span
                     className="dl-sidebar__status-dot"
-                    style={{ background: STATUS_DOT_COLOR[repo.status] || '#6B7280' }}
+                    style={{ background: STATUS_DOT_COLOR[repo.status] || 'var(--dl-text-muted)' }}
                     aria-hidden="true"
                   />
                   <span className="dl-sidebar__repo-name">{repo.name}</span>

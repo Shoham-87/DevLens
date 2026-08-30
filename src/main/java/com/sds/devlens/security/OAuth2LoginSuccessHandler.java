@@ -4,6 +4,7 @@ import com.sds.devlens.entity.Users;
 import com.sds.devlens.services.RefreshToken;
 import com.sds.devlens.services.UserService;
 import jakarta.servlet.ServletException;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -57,8 +58,21 @@ public class OAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
         String githubAccessToken = client.getAccessToken().getTokenValue();
         Users user = userService.findOrCreateUser(oAuth2User,githubAccessToken );
 
-        String accessToken = userService.getAccessToken(user.getId(),user.getGithubId());
         String refreshTokenValue = refreshToken.findOrCreateTokens(user.getId());
+        String accessToken = userService.getAccessToken(user.getId(),user.getGithubId());
+
+        // 1. Create secure cookies for your tokens
+//        Cookie accessCookie = new Cookie("accessToken", accessToken);
+//        accessCookie.setHttpOnly(true);
+//        accessCookie.setSecure(true);
+//        accessCookie.setPath("/");
+//        accessCookie.setMaxAge(900);
+//
+//        Cookie refreshCookie = new Cookie("refreshToken", refreshTokenValue);
+//        refreshCookie.setHttpOnly(true);
+//        refreshCookie.setSecure(true);
+//        refreshCookie.setPath("/auth/refresh");
+//        refreshCookie.setMaxAge(2592000);
 
         String redirectUrl = UriComponentsBuilder
                 .fromUriString(frontendUrl + "/devlens/login")

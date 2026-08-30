@@ -1,31 +1,34 @@
 :root {
   /* Colors */
-  --dl-primary:        #4F46E5;
-  --dl-primary-dark:   #3730A3;
-  --dl-primary-light:  #6366F1;
-  --dl-accent:         #10B981;
-  --dl-purple:         #7C3AED;
+  --dl-primary-rgb:       193, 105, 79;
+  --dl-primary:           rgb(var(--dl-primary-rgb));
+  --dl-primary-dark:      #A5523B;
+  --dl-primary-light:     #D68566;
+  --dl-accent-rgb:        95, 133, 86;
+  --dl-accent:            rgb(var(--dl-accent-rgb));
 
   /* Backgrounds */
-  --dl-bg-base:        #070B14;
-  --dl-bg-surface:     #0D1117;
-  --dl-bg-elevated:    #111827;
-  --dl-bg-card:        rgba(13, 17, 30, 0.88);
+  --dl-bg-base:        #FAF6EF;
+  --dl-bg-surface:     #FFFEFB;
+  --dl-bg-elevated:    #F1E9DD;
+  --dl-bg-card:        #FFFEFB;
 
   /* Borders */
-  --dl-border-subtle:  rgba(99, 102, 241, 0.12);
-  --dl-border-default: rgba(99, 102, 241, 0.22);
-  --dl-border-strong:  rgba(99, 102, 241, 0.45);
+  --dl-border-rgb:     43, 38, 34;
+  --dl-border-subtle:  rgba(var(--dl-border-rgb), 0.08);
+  --dl-border-default: rgba(var(--dl-border-rgb), 0.13);
+  --dl-border-strong:  rgba(var(--dl-border-rgb), 0.24);
 
   /* Text */
-  --dl-text-primary:   #F9FAFB;
-  --dl-text-secondary: #9CA3AF;
-  --dl-text-muted:     #6B7280;
-  --dl-text-faint:     #374151;
+  --dl-text-primary:   #2A2420;
+  --dl-text-secondary: #6B5F54;
+  --dl-text-muted:     #96897C;
+  --dl-text-faint:     #CBC1B4;
 
   /* Fonts */
-  --dl-font-display: 'Syne', sans-serif;
-  --dl-font-mono:    'JetBrains Mono', monospace;
+  --dl-font-display: 'Fraunces', Georgia, serif;
+  --dl-font-sans:    'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  --dl-font-mono:    'JetBrains Mono', 'SFMono-Regular', monospace;
 
   /* Spacing */
   --dl-space-xs:  4px;
@@ -38,10 +41,73 @@
   --dl-radius-sm:   6px;
   --dl-radius-md:   10px;
   --dl-radius-lg:   14px;
-  --dl-radius-xl:   20px;
+  --dl-radius-xl:   18px;
   --dl-radius-pill: 9999px;
 
   /* Shadows */
-  --dl-shadow-card: 0 0 0 1px rgba(99,102,241,0.05), 0 32px 64px rgba(0,0,0,0.6);
-  --dl-shadow-glow: 0 8px 24px rgba(79, 70, 229, 0.4);
+  --dl-shadow-card:       0 1px 2px rgba(var(--dl-border-rgb), 0.05), 0 6px 16px rgba(var(--dl-border-rgb), 0.07);
+  --dl-shadow-card-hover: 0 2px 4px rgba(var(--dl-border-rgb), 0.06), 0 16px 32px rgba(var(--dl-border-rgb), 0.10);
+  --dl-shadow-focus:      0 0 0 3px rgba(var(--dl-primary-rgb), 0.18);
+
+  /* Status */
+  --dl-status-pending-rgb:  184, 134, 43;
+  --dl-status-indexing-rgb: 74, 122, 148;
+  --dl-status-ready-rgb:    95, 133, 86;
+  --dl-status-failed-rgb:   180, 69, 58;
+  --dl-status-pending:  rgb(var(--dl-status-pending-rgb));
+  --dl-status-indexing: rgb(var(--dl-status-indexing-rgb));
+  --dl-status-ready:    rgb(var(--dl-status-ready-rgb));
+  --dl-status-failed:   rgb(var(--dl-status-failed-rgb));
+
+  /* Language badges */
+  --dl-lang-java-rgb:       139, 86, 48;
+  --dl-lang-javascript-rgb: 150, 112, 31;
+  --dl-lang-typescript-rgb: 60, 92, 140;
+  --dl-lang-python-rgb:     74, 107, 65;
+  --dl-lang-go-rgb:         59, 110, 110;
+  --dl-lang-rust-rgb:       147, 64, 31;
+  --dl-lang-java:       rgb(var(--dl-lang-java-rgb));
+  --dl-lang-javascript: rgb(var(--dl-lang-javascript-rgb));
+  --dl-lang-typescript: rgb(var(--dl-lang-typescript-rgb));
+  --dl-lang-python:     rgb(var(--dl-lang-python-rgb));
+  --dl-lang-go:         rgb(var(--dl-lang-go-rgb));
+  --dl-lang-rust:       rgb(var(--dl-lang-rust-rgb));
+}
+
+/* Dark theme */
+:root[data-theme="dark"] {
+  --dl-primary-rgb:       224, 138, 103;
+  --dl-primary-dark:      #C1694F;
+  --dl-primary-light:     #F0A688;
+  --dl-accent-rgb:        143, 197, 126;
+
+  --dl-bg-base:        #1C1815;
+  --dl-bg-surface:     #24201B;
+  --dl-bg-elevated:    #302A23;
+  --dl-bg-card:        #24201B;
+
+  --dl-border-rgb:     250, 246, 239;
+  --dl-border-subtle:  rgba(var(--dl-border-rgb), 0.07);
+  --dl-border-default: rgba(var(--dl-border-rgb), 0.12);
+  --dl-border-strong:  rgba(var(--dl-border-rgb), 0.22);
+
+  --dl-text-primary:   #F2ECE3;
+  --dl-text-secondary: #B8AC9E;
+  --dl-text-muted:     #86786A;
+  --dl-text-faint:     #4A4038;
+
+  --dl-shadow-card:       0 1px 2px rgba(0, 0, 0, 0.3), 0 6px 16px rgba(0, 0, 0, 0.35);
+  --dl-shadow-card-hover: 0 2px 4px rgba(0, 0, 0, 0.35), 0 16px 32px rgba(0, 0, 0, 0.45);
+
+  --dl-status-pending-rgb:  224, 172, 79;
+  --dl-status-indexing-rgb: 127, 179, 213;
+  --dl-status-ready-rgb:    143, 197, 126;
+  --dl-status-failed-rgb:   224, 130, 119;
+
+  --dl-lang-java-rgb:       206, 148, 105;
+  --dl-lang-javascript-rgb: 216, 176, 92;
+  --dl-lang-typescript-rgb: 137, 166, 214;
+  --dl-lang-python-rgb:     144, 186, 132;
+  --dl-lang-go-rgb:         123, 190, 190;
+  --dl-lang-rust-rgb:       214, 140, 100;
 }

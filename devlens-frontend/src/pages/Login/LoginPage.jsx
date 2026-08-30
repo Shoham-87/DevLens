@@ -1,5 +1,6 @@
 import React from 'react';
 import useLogin from './useLogin.js';
+import ThemeToggle from '../../components/ThemeToggle.jsx';
 import './LoginPage.css';
 
 function GitHubIcon() {
@@ -20,17 +21,17 @@ export default function LoginPage() {
 
   return (
     <div className="login-page">
-      <div className="login-page__glow" aria-hidden="true" />
+      <ThemeToggle className="login-page__theme-toggle" />
 
       <div className="login-card dl-fu-1">
         <div className="login-card__logo">
-          <span className="login-card__logo-icon" aria-hidden="true">⬡</span>
+          <span className="login-card__logo-icon" aria-hidden="true">◎</span>
           <span className="login-card__logo-text">DevLens</span>
         </div>
 
-        <h1 className="login-card__title">AI-powered code intelligence</h1>
+        <h1 className="login-card__title">A closer look at your codebase</h1>
         <p className="login-card__subtitle">
-          Connect your GitHub repos and chat with your code, get library recommendations,
+          Connect a GitHub repo to chat with your code, get library recommendations,
           and automate PR reviews.
         </p>
 

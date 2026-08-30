@@ -51,7 +51,7 @@ function EmptyState({ onConnect }) {
       <div className="dash-empty__icon" aria-hidden="true">⊡</div>
       <h2 className="dash-empty__title">No repositories connected</h2>
       <p className="dash-empty__sub">
-        Connect a GitHub repository to start chatting with your code and getting AI-powered insights.
+        Connect a GitHub repository to start chatting with your code and getting library recommendations.
       </p>
       <button className="btn btn-primary dash-empty__btn" onClick={onConnect}>
         Connect a repository

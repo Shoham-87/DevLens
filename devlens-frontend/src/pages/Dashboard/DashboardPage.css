@@ -33,7 +33,8 @@
   align-items: center;
   justify-content: center;
   padding: var(--dl-space-xl) var(--dl-space-lg);
-  border: 2px dashed var(--dl-border-default);
+  background: var(--dl-bg-surface);
+  border: 1px dashed var(--dl-border-strong);
   border-radius: var(--dl-radius-xl);
   text-align: center;
   min-height: 320px;
@@ -78,13 +79,14 @@
   border: 1px solid var(--dl-border-default);
   border-radius: var(--dl-radius-lg);
   padding: var(--dl-space-lg);
+  box-shadow: var(--dl-shadow-card);
   cursor: pointer;
   transition: border-color 0.15s, box-shadow 0.15s, transform 0.15s;
 }
 
 .dash-card:hover {
   border-color: var(--dl-border-strong);
-  box-shadow: var(--dl-shadow-glow);
+  box-shadow: var(--dl-shadow-card-hover);
   transform: translateY(-2px);
 }
 
@@ -116,10 +118,10 @@
   flex-shrink: 0;
 }
 
-.dash-card__status-badge--pending  { background: rgba(251,191,36,0.12);  color: #FBBF24; }
-.dash-card__status-badge--indexing { background: rgba(99,102,241,0.12);  color: #6366F1; }
-.dash-card__status-badge--ready    { background: rgba(16,185,129,0.12);  color: #10B981; }
-.dash-card__status-badge--failed   { background: rgba(239,68,68,0.12);   color: #EF4444; }
+.dash-card__status-badge--pending  { background: rgba(var(--dl-status-pending-rgb),0.12);  color: var(--dl-status-pending); }
+.dash-card__status-badge--indexing { background: rgba(var(--dl-status-indexing-rgb),0.12); color: var(--dl-status-indexing); }
+.dash-card__status-badge--ready    { background: rgba(var(--dl-status-ready-rgb),0.12);    color: var(--dl-status-ready); }
+.dash-card__status-badge--failed   { background: rgba(var(--dl-status-failed-rgb),0.12);   color: var(--dl-status-failed); }
 
 .dash-card__pulse-dot {
   width: 7px;
@@ -153,9 +155,9 @@
 /* Error */
 .dash-error {
   padding: var(--dl-space-md);
-  background: rgba(239, 68, 68, 0.08);
-  border: 1px solid rgba(239, 68, 68, 0.25);
+  background: rgba(var(--dl-status-failed-rgb), 0.08);
+  border: 1px solid rgba(var(--dl-status-failed-rgb), 0.25);
   border-radius: var(--dl-radius-md);
-  color: #FCA5A5;
+  color: var(--dl-status-failed);
   font-size: 0.875rem;
 }
