@@ -75,9 +75,9 @@
   font-weight: 600;
 }
 
-.rd-badge--lang    { background: rgba(99,102,241,0.12); color: #818CF8; }
-.rd-badge--private { background: rgba(251,191,36,0.12); color: #FBBF24; }
-.rd-badge--public  { background: rgba(16,185,129,0.12); color: #10B981; }
+.rd-badge--lang    { background: rgba(var(--dl-lang-typescript-rgb),0.12); color: var(--dl-lang-typescript); }
+.rd-badge--private { background: rgba(var(--dl-status-pending-rgb),0.12);  color: var(--dl-status-pending); }
+.rd-badge--public  { background: rgba(var(--dl-status-ready-rgb),0.12);    color: var(--dl-status-ready); }
 
 .rd-github-btn {
   display: inline-flex;
@@ -86,10 +86,11 @@
   padding: 0.5rem var(--dl-space-md);
   border-radius: var(--dl-radius-md);
   border: 1px solid var(--dl-border-default);
-  background: transparent;
+  background: var(--dl-bg-surface);
   color: var(--dl-text-secondary);
   font-size: 0.8rem;
-  font-family: var(--dl-font-display);
+  font-family: var(--dl-font-sans);
+  font-weight: 500;
   cursor: pointer;
   text-decoration: none;
   transition: border-color 0.15s, color 0.15s;
@@ -106,6 +107,7 @@
   background: var(--dl-bg-card);
   border: 1px solid var(--dl-border-default);
   border-radius: var(--dl-radius-lg);
+  box-shadow: var(--dl-shadow-card);
   padding: var(--dl-space-lg);
   margin-bottom: var(--dl-space-lg);
 }
@@ -118,14 +120,14 @@
 }
 
 .rd-progress-card__icon {
-  color: var(--dl-primary-light);
+  color: var(--dl-primary);
 }
 
 .rd-progress-card__title {
   font-size: 1rem;
   font-weight: 600;
   color: var(--dl-text-primary);
-  font-family: var(--dl-font-display);
+  font-family: var(--dl-font-sans);
 }
 
 .rd-progress-card__sub {
@@ -157,6 +159,7 @@
   background: var(--dl-bg-card);
   border: 1px solid var(--dl-border-subtle);
   border-radius: var(--dl-radius-md);
+  box-shadow: var(--dl-shadow-card);
   padding: var(--dl-space-md);
 }
 
@@ -186,12 +189,13 @@
   background: var(--dl-bg-card);
   border: 1px solid var(--dl-border-default);
   border-radius: var(--dl-radius-lg);
+  box-shadow: var(--dl-shadow-card);
   padding: var(--dl-space-lg);
   transition: border-color 0.15s, box-shadow 0.15s;
 }
 
 .rd-feature-card--locked {
-  opacity: 0.4;
+  opacity: 0.5;
   cursor: not-allowed;
 }
 
@@ -201,7 +205,7 @@
 
 .rd-feature-card--unlocked:hover {
   border-color: var(--dl-border-strong);
-  box-shadow: var(--dl-shadow-glow);
+  box-shadow: var(--dl-shadow-card-hover);
 }
 
 .rd-feature-card__icon {
@@ -213,7 +217,7 @@
   font-size: 0.95rem;
   font-weight: 600;
   color: var(--dl-text-primary);
-  font-family: var(--dl-font-display);
+  font-family: var(--dl-font-sans);
   margin-bottom: var(--dl-space-xs);
 }
 
@@ -239,9 +243,9 @@
 
 .rd-error {
   padding: var(--dl-space-md);
-  background: rgba(239,68,68,0.08);
-  border: 1px solid rgba(239,68,68,0.25);
+  background: rgba(var(--dl-status-failed-rgb), 0.08);
+  border: 1px solid rgba(var(--dl-status-failed-rgb), 0.25);
   border-radius: var(--dl-radius-md);
-  color: #FCA5A5;
+  color: var(--dl-status-failed);
   font-size: 0.875rem;
 }

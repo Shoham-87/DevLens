@@ -22,6 +22,7 @@
   padding: var(--dl-space-sm) var(--dl-space-md);
   border-radius: var(--dl-radius-md);
   color: var(--dl-text-secondary);
+  font-family: var(--dl-font-sans);
   font-size: 0.875rem;
   font-weight: 500;
   text-decoration: none;
@@ -34,8 +35,8 @@
 }
 
 .dl-sidebar__nav-item--active {
-  background-color: rgba(79, 70, 229, 0.12);
-  color: var(--dl-primary-light);
+  background-color: rgba(193, 105, 79, 0.12);
+  color: var(--dl-primary-dark);
 }
 
 .dl-sidebar__nav-item--disabled {
@@ -86,7 +87,7 @@
 }
 
 .dl-sidebar__repo-item--active {
-  background-color: rgba(79, 70, 229, 0.1);
+  background-color: rgba(193, 105, 79, 0.1);
   color: var(--dl-text-primary);
 }
 

@@ -12,7 +12,8 @@
   padding: 0;
   color: var(--dl-text-secondary);
   font-size: 0.875rem;
-  font-family: var(--dl-font-display);
+  font-family: var(--dl-font-sans);
+  font-weight: 500;
   cursor: pointer;
   margin-bottom: var(--dl-space-lg);
   transition: color 0.15s;
@@ -80,7 +81,7 @@
 }
 
 .repo-row--selected {
-  background: rgba(79, 70, 229, 0.06);
+  background: rgba(var(--dl-primary-rgb), 0.06);
   border-color: var(--dl-primary);
 }
 
@@ -127,12 +128,12 @@
   font-weight: 500;
 }
 
-.repo-row__lang-badge--java       { background: rgba(99,102,241,0.15); color: #818CF8; }
-.repo-row__lang-badge--javascript { background: rgba(251,191,36,0.15); color: #FCD34D; }
-.repo-row__lang-badge--typescript { background: rgba(59,130,246,0.15); color: #93C5FD; }
-.repo-row__lang-badge--python     { background: rgba(16,185,129,0.15); color: #6EE7B7; }
-.repo-row__lang-badge--go         { background: rgba(6,182,212,0.15);  color: #67E8F9; }
-.repo-row__lang-badge--rust       { background: rgba(249,115,22,0.15); color: #FDBA74; }
+.repo-row__lang-badge--java       { background: rgba(var(--dl-lang-java-rgb),0.15);       color: var(--dl-lang-java); }
+.repo-row__lang-badge--javascript { background: rgba(var(--dl-lang-javascript-rgb),0.15); color: var(--dl-lang-javascript); }
+.repo-row__lang-badge--typescript { background: rgba(var(--dl-lang-typescript-rgb),0.15); color: var(--dl-lang-typescript); }
+.repo-row__lang-badge--python     { background: rgba(var(--dl-lang-python-rgb),0.15);     color: var(--dl-lang-python); }
+.repo-row__lang-badge--go         { background: rgba(var(--dl-lang-go-rgb),0.15);         color: var(--dl-lang-go); }
+.repo-row__lang-badge--rust       { background: rgba(var(--dl-lang-rust-rgb),0.15);       color: var(--dl-lang-rust); }
 .repo-row__lang-badge--default    { background: var(--dl-bg-elevated); color: var(--dl-text-secondary); }
 
 .repo-row__connected-badge {
@@ -141,8 +142,8 @@
   font-family: var(--dl-font-mono);
   font-size: 0.68rem;
   font-weight: 600;
-  background: rgba(16,185,129,0.12);
-  color: #10B981;
+  background: rgba(var(--dl-status-ready-rgb),0.12);
+  color: var(--dl-status-ready);
   flex-shrink: 0;
 }
 
@@ -159,10 +160,10 @@
 
 .repo-error {
   padding: var(--dl-space-sm) var(--dl-space-md);
-  background: rgba(239,68,68,0.08);
-  border: 1px solid rgba(239,68,68,0.25);
+  background: rgba(var(--dl-status-failed-rgb), 0.08);
+  border: 1px solid rgba(var(--dl-status-failed-rgb), 0.25);
   border-radius: var(--dl-radius-md);
-  color: #FCA5A5;
+  color: var(--dl-status-failed);
   font-size: 0.85rem;
   margin-bottom: var(--dl-space-md);
 }

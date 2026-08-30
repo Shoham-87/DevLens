@@ -1,7 +1,7 @@
 @keyframes fadeUp {
   from {
     opacity: 0;
-    transform: translateY(18px);
+    transform: translateY(10px);
   }
   to {
     opacity: 1;
@@ -9,30 +9,30 @@
   }
 }
 
-.dl-fu-1 { animation: fadeUp 0.5s ease both; animation-delay: 0.10s; }
-.dl-fu-2 { animation: fadeUp 0.5s ease both; animation-delay: 0.25s; }
-.dl-fu-3 { animation: fadeUp 0.5s ease both; animation-delay: 0.40s; }
-.dl-fu-4 { animation: fadeUp 0.5s ease both; animation-delay: 0.55s; }
-.dl-fu-5 { animation: fadeUp 0.5s ease both; animation-delay: 0.70s; }
+.dl-fu-1 { animation: fadeUp 0.4s ease both; animation-delay: 0.05s; }
+.dl-fu-2 { animation: fadeUp 0.4s ease both; animation-delay: 0.12s; }
+.dl-fu-3 { animation: fadeUp 0.4s ease both; animation-delay: 0.19s; }
+.dl-fu-4 { animation: fadeUp 0.4s ease both; animation-delay: 0.26s; }
+.dl-fu-5 { animation: fadeUp 0.4s ease both; animation-delay: 0.33s; }
 
 body {
   background-color: var(--dl-bg-base) !important;
   color: var(--dl-text-primary) !important;
-  font-family: var(--dl-font-display) !important;
+  font-family: var(--dl-font-sans) !important;
 }
 
 .btn-primary {
   background-color: var(--dl-primary) !important;
   border-color: var(--dl-primary) !important;
   color: #fff !important;
-  font-family: var(--dl-font-display) !important;
+  font-family: var(--dl-font-sans) !important;
   font-weight: 600 !important;
 }
 
 .btn-primary:hover {
   background-color: var(--dl-primary-dark) !important;
   border-color: var(--dl-primary-dark) !important;
-  box-shadow: var(--dl-shadow-glow) !important;
+  box-shadow: var(--dl-shadow-card-hover) !important;
 }
 
 .btn-primary:disabled {
@@ -63,18 +63,18 @@ body {
 
 input.form-control,
 select.form-select {
-  background-color: var(--dl-bg-elevated) !important;
+  background-color: var(--dl-bg-surface) !important;
   border: 1px solid var(--dl-border-default) !important;
   color: var(--dl-text-primary) !important;
   border-radius: var(--dl-radius-md) !important;
-  font-family: var(--dl-font-display) !important;
+  font-family: var(--dl-font-sans) !important;
 }
 
 input.form-control:focus,
 select.form-select:focus {
-  background-color: var(--dl-bg-elevated) !important;
-  border-color: var(--dl-border-strong) !important;
-  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.15) !important;
+  background-color: var(--dl-bg-surface) !important;
+  border-color: var(--dl-primary) !important;
+  box-shadow: var(--dl-shadow-focus) !important;
   color: var(--dl-text-primary) !important;
   outline: none !important;
 }
@@ -84,6 +84,6 @@ input.form-control::placeholder {
 }
 
 select.form-select option {
-  background-color: var(--dl-bg-elevated);
+  background-color: var(--dl-bg-surface);
   color: var(--dl-text-primary);
 }

@@ -1,0 +1,21 @@
+.dl-theme-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  border-radius: var(--dl-radius-pill);
+  border: 1px solid var(--dl-border-default);
+  background: var(--dl-bg-surface);
+  color: var(--dl-text-secondary);
+  font-size: 1rem;
+  line-height: 1;
+  cursor: pointer;
+  transition: border-color 0.15s, color 0.15s, background 0.15s;
+}
+
+.dl-theme-toggle:hover {
+  border-color: var(--dl-border-strong);
+  color: var(--dl-text-primary);
+  background: var(--dl-bg-elevated);
+}
