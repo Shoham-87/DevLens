@@ -1,0 +1,97 @@
+.dl-profile-menu {
+  position: relative;
+}
+
+.dl-profile-menu__trigger {
+  display: flex;
+  align-items: center;
+  gap: var(--dl-space-sm);
+  background: none;
+  border: 1px solid transparent;
+  border-radius: var(--dl-radius-pill);
+  padding: 4px 10px 4px 4px;
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s;
+}
+
+.dl-profile-menu__trigger:hover,
+.dl-profile-menu__trigger[aria-expanded="true"] {
+  background: var(--dl-bg-elevated);
+  border-color: var(--dl-border-default);
+}
+
+.dl-profile-menu__caret {
+  color: var(--dl-text-muted);
+  font-size: 0.7rem;
+}
+
+.dl-profile-menu__panel {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  min-width: 220px;
+  background: var(--dl-bg-surface);
+  border: 1px solid var(--dl-border-default);
+  border-radius: var(--dl-radius-md);
+  box-shadow: var(--dl-shadow-card-hover);
+  padding: var(--dl-space-sm);
+  z-index: 200;
+}
+
+.dl-profile-menu__meta {
+  padding: var(--dl-space-xs) var(--dl-space-sm) var(--dl-space-sm);
+}
+
+.dl-profile-menu__name {
+  font-family: var(--dl-font-sans);
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--dl-text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.dl-profile-menu__handle {
+  font-family: var(--dl-font-mono);
+  font-size: 0.75rem;
+  color: var(--dl-text-muted);
+  margin-top: 2px;
+}
+
+.dl-profile-menu__divider {
+  height: 1px;
+  background: var(--dl-border-subtle);
+  margin: var(--dl-space-xs) 0;
+}
+
+.dl-profile-menu__item {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: var(--dl-space-sm);
+  padding: var(--dl-space-sm);
+  border: none;
+  background: none;
+  border-radius: var(--dl-radius-sm);
+  font-family: var(--dl-font-sans);
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--dl-text-primary);
+  text-align: left;
+  cursor: pointer;
+  transition: background 0.12s, color 0.12s;
+}
+
+.dl-profile-menu__item:hover:not(:disabled) {
+  background: var(--dl-bg-elevated);
+}
+
+.dl-profile-menu__item:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.dl-profile-menu__item--danger {
+  color: var(--dl-status-failed);
+}

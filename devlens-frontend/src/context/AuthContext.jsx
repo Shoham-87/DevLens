@@ -10,7 +10,7 @@ export function AuthProvider({ children }) {
 
   const login = useCallback((jwt, refresh, profile) => {
     setToken(jwt);
-    setRefreshToken(refreshToken);
+    setRefreshToken(refresh);
     setUser(profile);
     setAuthToken(jwt);
   }, []);
