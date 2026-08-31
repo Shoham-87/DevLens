@@ -8,6 +8,7 @@ import com.sds.devlens.entity.ConnectedRepo;
 import com.sds.devlens.entity.Users;
 import com.sds.devlens.services.ConnectedRepoService;
 import com.sds.devlens.services.GitHubApiClient;
+import com.sds.devlens.services.Ingestion;
 import com.sds.devlens.services.UserService;
 import io.jsonwebtoken.lang.Collections;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,6 +17,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.client.RestTemplate;
 
 import java.util.List;
 import java.util.Map;
@@ -36,6 +38,13 @@ public class RepoController {
 
     private ConnectedRepoService connectedRepoService;
 
+    private Ingestion ingestion;
+
+    @Autowired
+    public void setIngestion(Ingestion ingestion) {
+        this.ingestion = ingestion;
+    }
+
     @Autowired
     public void setUserService(UserService userService) {
         this.userService = userService;
@@ -50,6 +59,8 @@ public class RepoController {
     public void setConnectedRepoService(ConnectedRepoService connectedRepoService) {
         this.connectedRepoService = connectedRepoService;
     }
+
+
 
     @GetMapping("/repos")
     public ResponseEntity<List<RepoDTO>> getGithubRepos(Authentication authentication,
@@ -151,6 +162,8 @@ public class RepoController {
 
     @Async
     protected void triggerIngestion(String connectedRepoId) {
-        System.out.println("Ingestion triggered for: " + connectedRepoId);
+//        System.out.println("Ingestion triggered for: " + connectedRepoId);
+        System.out.println(ingestion.checkHealth());
     }
+
 }

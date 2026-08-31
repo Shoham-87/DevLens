@@ -27,3 +27,5 @@ devlens:
     refresh-token-time-span: 604800000
   frontend:
     url: http://localhost:5173
+  ingestion:
+    url: http://127.0.0.1:8000
