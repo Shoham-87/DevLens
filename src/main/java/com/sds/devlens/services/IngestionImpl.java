@@ -17,8 +17,12 @@ public class IngestionImpl implements Ingestion{
 
     @Override
     public String checkHealth() {
-        return restClient.get()
+        return getRestClient().get()
                 .uri("/{endpoint}",IngestionEnum.HEALTH.getIngestionValue().toLowerCase())
                 .retrieve().body(String.class);
+    }
+
+    public RestClient getRestClient() {
+        return restClient;
     }
 }
