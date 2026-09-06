@@ -2,7 +2,8 @@ package com.sds.devlens.enums;
 
 public enum IngestionEnum {
 
-     HEALTH("HEALTH");
+     HEALTH("HEALTH"),
+     INGEST("INGEST");
 
     private final String ingestionValue;
 

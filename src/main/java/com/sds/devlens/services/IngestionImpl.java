@@ -1,7 +1,10 @@
 package com.sds.devlens.services;
 
+import com.sds.devlens.dto.IngestRequest;
 import com.sds.devlens.enums.IngestionEnum;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClient;
 
@@ -17,12 +20,18 @@ public class IngestionImpl implements Ingestion{
 
     @Override
     public String checkHealth() {
-        return getRestClient().get()
+        return restClient.get()
                 .uri("/{endpoint}",IngestionEnum.HEALTH.getIngestionValue().toLowerCase())
                 .retrieve().body(String.class);
     }
 
-    public RestClient getRestClient() {
-        return restClient;
+    @Override
+    public ResponseEntity<Void> triggerIngestion(IngestRequest ingestRequest) {
+        return restClient.post()
+                .uri("/{endpoint}",IngestionEnum.INGEST.getIngestionValue().toLowerCase())
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(ingestRequest)
+                .retrieve().toBodilessEntity();
     }
+
 }

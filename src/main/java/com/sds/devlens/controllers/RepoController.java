@@ -3,6 +3,7 @@ package com.sds.devlens.controllers;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.sds.devlens.dto.ConnectRepoRequest;
 import com.sds.devlens.dto.ConnectedRepoDTO;
+import com.sds.devlens.dto.IngestRequest;
 import com.sds.devlens.dto.RepoDTO;
 import com.sds.devlens.entity.ConnectedRepo;
 import com.sds.devlens.entity.Users;
@@ -11,6 +12,7 @@ import com.sds.devlens.services.GitHubApiClient;
 import com.sds.devlens.services.Ingestion;
 import com.sds.devlens.services.UserService;
 import io.jsonwebtoken.lang.Collections;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -26,6 +28,7 @@ import java.util.stream.Collectors;
 
 import static com.sds.devlens.enums.ConnectedRepoStatus.PENDING;
 
+@Slf4j
 @RestController
 @RequestMapping("/devlens")
 public class RepoController {
@@ -103,7 +106,8 @@ public class RepoController {
         }
         ConnectedRepo connectedRepo = connectedRepoService.createConnectedRepo(userId, repoId, request.getRepoName(),
                 request.getRepoUrl(), request.getLanguage(), PENDING.getStatus());
-        triggerIngestion(connectedRepo.getId());
+        triggerIngestion(connectedRepo.getId(), connectedRepo.getRepoUrl(),
+                connectedRepo.getName(),userService.findUserByUserId(userId).getGithubAccessToken());
         return ResponseEntity.ok(Map.of(
                 "connectedRepoId", connectedRepo.getId(),
                 "status", connectedRepo.getStatus(),
@@ -160,9 +164,12 @@ public class RepoController {
     }
 
     @Async
-    protected void triggerIngestion(String connectedRepoId) {
+    protected void triggerIngestion(String connectedRepoId, String repoUrl,
+                                    String repoName, String githubAccessToken) {
 //        System.out.println("Ingestion triggered for: " + connectedRepoId);
-        System.out.println(ingestion.checkHealth());
+        IngestRequest ingestRequest = new IngestRequest(connectedRepoId,repoUrl,githubAccessToken,repoName);
+        log.info(String.valueOf(ingestion.triggerIngestion(ingestRequest)));
     }
+
 
 }
