@@ -3,12 +3,16 @@ from psycopg_pool  import AsyncConnectionPool
 from bson import ObjectId
 import traceback
 
+from enums.Status import Status
+
 
 async def run(payload:IngestRequest,pg_pool: AsyncConnectionPool, mongo_db):
     try:
-        await updateConectedRepoStatus(mongo_db,payload.connectedRepoId,"INDEXING")
+        await updateConectedRepoStatus(mongo_db,payload.connectedRepoId,Status.INDEXING.value)
 
         print("Pipeline finished successfully!")
+
+        await updateConectedRepoStatus(mongo_db,payload.connectedRepoId,Status.READY.value)
         
     except Exception as e:
         print(f"Pipeline failed: {traceback.format_exc()}")
