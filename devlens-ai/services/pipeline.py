@@ -4,11 +4,15 @@ from bson import ObjectId
 import traceback
 
 from enums.Status import Status
+from services.cloner import clone,cleanUp
 
 
 async def run(payload:IngestRequest,pg_pool: AsyncConnectionPool, mongo_db):
+    temp_dir = None
     try:
         await updateConectedRepoStatus(mongo_db,payload.connectedRepoId,Status.INDEXING.value)
+
+        temp_dir = clone(payload.repoUrl,payload.githubAccessToken,payload.connectedRepoId)
 
         print("Pipeline finished successfully!")
 
@@ -17,6 +21,11 @@ async def run(payload:IngestRequest,pg_pool: AsyncConnectionPool, mongo_db):
     except Exception as e:
         print(f"Pipeline failed: {traceback.format_exc()}")
         print(f"Pipeline failed for {payload.connectedRepoId}: {payload.repoUrl}")
+        await updateConectedRepoStatus(mongo_db, payload.connectedRepoId, Status.FAILED.value)
+
+    # finally:
+    #     if temp_dir:
+    #         cleanUp(temp_dir)
 
 
 async def updateConectedRepoStatus(mongo_db,connected_repo_id:str,new_value:str):

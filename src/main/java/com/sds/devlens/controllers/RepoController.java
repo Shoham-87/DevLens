@@ -99,6 +99,7 @@ public class RepoController {
                                              @RequestBody ConnectRepoRequest request) {
 
         String userId = (String) authentication.getPrincipal();
+        Users user = userService.findUserByUserId(userId);
         Optional<ConnectedRepo> existingConnectedRepo = connectedRepoService.findByUserIdAndGithubRepoId(userId,repoId);
         if(existingConnectedRepo.isPresent()) {
             return ResponseEntity.status(HttpStatus.CONFLICT)
@@ -106,8 +107,11 @@ public class RepoController {
         }
         ConnectedRepo connectedRepo = connectedRepoService.createConnectedRepo(userId, repoId, request.getRepoName(),
                 request.getRepoUrl(), request.getLanguage(), PENDING.getStatus());
-        triggerIngestion(connectedRepo.getId(), connectedRepo.getRepoUrl(),
-                connectedRepo.getName(),userService.findUserByUserId(userId).getGithubAccessToken());
+        String repoUrl = connectedRepo.getRepoUrl() != null
+                ? connectedRepo.getRepoUrl()
+                : "https://github.com/" + user.getUsername() + "/" + connectedRepo.getName();
+        triggerIngestion(connectedRepo.getId(),repoUrl,
+                connectedRepo.getName(),user.getGithubAccessToken());
         return ResponseEntity.ok(Map.of(
                 "connectedRepoId", connectedRepo.getId(),
                 "status", connectedRepo.getStatus(),

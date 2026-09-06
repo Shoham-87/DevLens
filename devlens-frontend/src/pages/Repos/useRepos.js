@@ -59,7 +59,8 @@ export default function useRepos() {
     try {
       const result = await connectRepo(selectedRepoId, {
         repoName: repo.name,
-        repoUrl:  `https://github.com/${repo.name}`,
+        repoUrl: repo.htmlUrl,
+        language: repo.language,
       });
       navigate(ROUTES.REPO_DETAIL(result.connectedRepoId));
     } catch {
