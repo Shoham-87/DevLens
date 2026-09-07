@@ -13,7 +13,7 @@ def clone(repo_url:str, github_access_token:str, connected_repo_id:str) -> Path:
     temporary_dir.mkdir(parents=True, exist_ok=True)
 
     auth_url = _format_repo_url(repo_url,github_access_token)
-    print("AUth URL",auth_url)
+    print("Auth URL",auth_url)
 
     print(f"Cloning repo into {temporary_dir}...")
     Repo.clone_from(auth_url, temporary_dir)
