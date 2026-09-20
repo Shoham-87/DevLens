@@ -33,7 +33,7 @@ public class RefreshTokenImpl implements RefreshToken{
     public String findOrCreateTokens(String userId) {
         RefreshTokens refreshToken = refreshTokenRepository.findByUserId(userId);
         if (!ObjectUtils.isEmpty(refreshToken)){
-            if (refreshToken.getExpiresAt().isAfter(Instant.now())) {
+            if (!refreshToken.isRevoked() && refreshToken.getExpiresAt().isAfter(Instant.now())) {
                 return refreshToken.getRefreshTokenValue();
             } else {
                 refreshTokenRepository.deleteByUserId(refreshToken.getUserId());
@@ -47,5 +47,10 @@ public class RefreshTokenImpl implements RefreshToken{
         refreshTokenRepository.save(newRefreshTokens);
         return refreshTokenValue;
 
+    }
+
+    @Override
+    public void revokeRefreshToken(String refreshToken){
+        refreshTokenRepository.revokeByRefreshTokenValue(refreshToken);
     }
 }

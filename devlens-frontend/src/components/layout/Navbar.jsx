@@ -1,5 +1,6 @@
 import React from 'react';
 import ThemeToggle from '../ThemeToggle.jsx';
+import ProfileMenu from './ProfileMenu.jsx';
 import './Navbar.css';
 
 export default function Navbar({ user }) {
@@ -12,16 +13,7 @@ export default function Navbar({ user }) {
 
       <div className="dl-navbar__right d-flex align-items-center gap-3">
         <ThemeToggle />
-        {user && (
-          <div className="dl-navbar__user d-flex align-items-center gap-2">
-            <img
-              src={user.avatarUrl}
-              alt={`${user.displayName} avatar`}
-              className="dl-navbar__avatar"
-            />
-            <span className="dl-navbar__username">{user.displayName || user.githubUsername}</span>
-          </div>
-        )}
+        {user && <ProfileMenu user={user} />}
       </div>
     </header>
   );

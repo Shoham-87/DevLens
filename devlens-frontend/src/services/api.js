@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { ROUTES } from '../constants/index.js';
 
 const api = axios.create({
   baseURL: import.meta.env.VITE_API_BASE_URL + '/devlens',
@@ -27,7 +28,7 @@ api.interceptors.response.use(
   (error) => {
     if (error.response?.status === 401) {
       clearAuthToken();
-      window.location.href = '/login';
+      window.location.href = ROUTES.LOGIN;
     }
     return Promise.reject(error);
   }

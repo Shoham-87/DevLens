@@ -3,6 +3,10 @@
   50%       { opacity: 0.3; }
 }
 
+.rd-progress-card .progress-bar {
+  transition: width 2.5s ease-out;
+}
+
 .rd-page {
   padding: var(--dl-space-xl);
   max-width: 1000px;
