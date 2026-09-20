@@ -8,6 +8,7 @@ from pgvector.psycopg import register_vector_async
 from config import setting
 
 from routers.ingestion import router as ingestion
+from routers.chat import router as chat
 from enums.IncomingDB import IncomingDB
 
 
@@ -42,6 +43,7 @@ async def lifeCycle(app:FastAPI):
 
 app=FastAPI(lifespan=lifeCycle)
 app.include_router(ingestion,prefix="/ai",tags=["Ingestion Module"])
+app.include_router(chat,prefix="/ai",tags=["Chat Module"])
 
 @app.get("/")
 async def root():
