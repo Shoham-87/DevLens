@@ -22,7 +22,6 @@ def clone(repo_url:str, github_access_token:str, connected_repo_id:str) -> Path:
     return temporary_dir
 
 def _handle_readonly(func, path, exc_info):
-    # Remove read-only attribute and retry the operation
     os.chmod(path, stat.S_IWRITE)
     func(path)
     
