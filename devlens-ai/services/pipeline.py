@@ -9,6 +9,7 @@ from services.walker import walk
 from config import setting
 from services.chunker import chunk
 from services.embedder import embed
+from db.pgvector import save_chunks
 
 
 async def run(payload:IngestRequest,pg_pool: AsyncConnectionPool, mongo_db):
@@ -35,6 +36,9 @@ async def run(payload:IngestRequest,pg_pool: AsyncConnectionPool, mongo_db):
         all_chunks = await embed(all_chunks, setting.jina_api_key)
 
         print(f"Embedding complete for {len(all_chunks)}")
+
+        await save_chunks(pg_pool, all_chunks)
+        print(f"Saved {len(all_chunks)} chunks to pgvector")
 
         print("Pipeline finished successfully!")
 
