@@ -3,6 +3,7 @@ from contextlib import asynccontextmanager
 from psycopg_pool import AsyncConnectionPool
 from psycopg.rows import dict_row
 from motor.motor_asyncio import AsyncIOMotorClient
+from pgvector.psycopg import register_vector_async
 
 from config import setting
 
@@ -10,13 +11,20 @@ from routers.ingestion import router as ingestion
 from enums.IncomingDB import IncomingDB
 
 
+async def setup_connection(conn):
+    await register_vector_async(conn)
+
+
 @asynccontextmanager
 async def lifeCycle(app:FastAPI):
     print("Creating psycopg connection pool...")
     app.state.db_pool = AsyncConnectionPool(
         setting.database_uri,
-        kwargs={"row_factory":dict_row}
+        kwargs={"row_factory":dict_row},
+        open=False,
+        configure=setup_connection
     )
+    await app.state.db_pool.open()
     await app.state.db_pool.wait()
     if setting.incoming_db == IncomingDB.MONGO.value.lower():
         print("MongoDB configuration detected. Initializing client...")

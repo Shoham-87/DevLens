@@ -88,6 +88,7 @@ def chunk(file_path:Path,repo_root: Path,repo_id: str) ->List[Dict[str, Any]]:
                 "repo_id": repo_id,
                 "chunk_index": chunk_index
             }
+            print(chunk_data)
             chunks.append(chunk_data)
             chunk_index += 1
 

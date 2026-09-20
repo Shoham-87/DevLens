@@ -8,6 +8,7 @@ from db.mongo import updateConnectedRepoStatus,updateConnectedRepoTotalFiles,upd
 from services.walker import walk
 from config import setting
 from services.chunker import chunk
+from services.embedder import embed
 
 
 async def run(payload:IngestRequest,pg_pool: AsyncConnectionPool, mongo_db):
@@ -19,7 +20,7 @@ async def run(payload:IngestRequest,pg_pool: AsyncConnectionPool, mongo_db):
 
         files = walk(temp_dir,setting.excluded_dirs,setting.allowed_extensions,setting.max_file_size)
 
-        print(f"Walker found {files} eligible files")
+        print(f"Walker found {len(files)} eligible files")
 
         await updateConnectedRepoTotalFiles(mongo_db,payload.connectedRepoId,len(files))
 
@@ -30,6 +31,10 @@ async def run(payload:IngestRequest,pg_pool: AsyncConnectionPool, mongo_db):
             await updateFilesProcessed(mongo_db, payload.connectedRepoId, i + 1,len(files),len(all_chunks))
 
         print(f"Total chunks: {len(all_chunks)}")
+
+        all_chunks = await embed(all_chunks, setting.jina_api_key)
+
+        print(f"Embedding complete for {len(all_chunks)}")
 
         print("Pipeline finished successfully!")
 
