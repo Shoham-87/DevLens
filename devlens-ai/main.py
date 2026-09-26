@@ -30,6 +30,7 @@ async def lifeCycle(app:FastAPI):
     if setting.incoming_db == IncomingDB.MONGO.value.lower():
         print("MongoDB configuration detected. Initializing client...")
         client = AsyncIOMotorClient(setting.incoming_database_uri)
+        app.state.mongo_client = client
         app.state.mongo_db = client[setting.incoming_db_schema_name]
     else:
         print(f"Skipping MongoDB. Configured DB is: {setting.incoming_db}")
@@ -39,7 +40,9 @@ async def lifeCycle(app:FastAPI):
     print("Closing psycopg connection pool...")
     await app.state.db_pool.close()
     if app.state.mongo_db:
-        await app.state.mongo_db.close()
+        app.state.mongo_db.close()
+    if app.state.mongo_client:
+        app.state.mongo_client.close()
 
 app=FastAPI(lifespan=lifeCycle)
 app.include_router(ingestion,prefix="/ai",tags=["Ingestion Module"])
