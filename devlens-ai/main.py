@@ -30,7 +30,7 @@ async def lifeCycle(app:FastAPI):
     if setting.incoming_db == IncomingDB.MONGO.value.lower():
         print("MongoDB configuration detected. Initializing client...")
         client = AsyncIOMotorClient(setting.incoming_database_uri)
-        app.state.mongo_db = client["devlens_transactional"]
+        app.state.mongo_db = client[setting.incoming_db_schema_name]
     else:
         print(f"Skipping MongoDB. Configured DB is: {setting.incoming_db}")
         app.state.mongo_db = None

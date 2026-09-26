@@ -12,7 +12,8 @@ class Setting(BaseSettings):
     allowed_extensions: Annotated[set[str], NoDecode] = Field(alias="devlens.app.walker.allowed_extensions")
     max_file_size:int = Field(alias="devlens.app.walker.max_file_size",default=500)
     jina_api_key : str
-    grog_api_eky : str
+    groq_api_key : str
+    incoming_db_schema_name : str = Field(alias="devlens.app.incoming.request.schema.name")
 
     @field_validator("excluded_dirs", "allowed_extensions", mode="before")
     @classmethod
