@@ -52,13 +52,3 @@ app.include_router(chat,prefix="/ai",tags=["Chat Module"])
 async def root():
     return {"message": "Welcome to the main API"}
 
-
-@app.get("/data")
-async def getData(request:Request):
-    pool : AsyncConnectionPool = request.app.state.db_pool
-
-    async with pool.connection() as connection:
-        cursor = await connection.execute('SELECT id, name FROM test')
-        records= await cursor.fetchall()
-
-        return {"data": records}
