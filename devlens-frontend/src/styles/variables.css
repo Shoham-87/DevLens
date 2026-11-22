@@ -72,6 +72,31 @@
   --dl-lang-python:     rgb(var(--dl-lang-python-rgb));
   --dl-lang-go:         rgb(var(--dl-lang-go-rgb));
   --dl-lang-rust:       rgb(var(--dl-lang-rust-rgb));
+
+  /* Syntax */
+  --dl-syn-keyword:  #B4397A;
+  --dl-syn-string:   #367F32;
+  --dl-syn-number:   #B5561C;
+  --dl-syn-function: #2F6FB8;
+  --dl-syn-type:     #8A4FC2;
+  --dl-syn-attr:     #12788A;
+  --dl-syn-meta:     #9A6A12;
+  --dl-syn-tag:      #C0433A;
+  --dl-syn-comment:  #9A8C7E;
+  --dl-syn-glow:     18%;
+  --dl-syn-glow-blur: 6px;
+
+  /* File types */
+  --dl-file-java:   var(--dl-syn-number);
+  --dl-file-py:     var(--dl-syn-function);
+  --dl-file-js:     var(--dl-syn-meta);
+  --dl-file-ts:     #2D7FA8;
+  --dl-file-web:    var(--dl-syn-tag);
+  --dl-file-style:  var(--dl-syn-type);
+  --dl-file-data:   var(--dl-syn-attr);
+  --dl-file-docs:   var(--dl-syn-string);
+  --dl-file-config: var(--dl-syn-keyword);
+  --dl-file-other:  var(--dl-text-secondary);
 }
 
 /* Dark theme */
@@ -110,4 +135,18 @@
   --dl-lang-python-rgb:     144, 186, 132;
   --dl-lang-go-rgb:         123, 190, 190;
   --dl-lang-rust-rgb:       214, 140, 100;
+
+  --dl-syn-keyword:  #F290C2;
+  --dl-syn-string:   #A8DC8C;
+  --dl-syn-number:   #F5AE6E;
+  --dl-syn-function: #86BAF5;
+  --dl-syn-type:     #C7A3F7;
+  --dl-syn-attr:     #72D2D8;
+  --dl-syn-meta:     #EBC56C;
+  --dl-syn-tag:      #F39282;
+  --dl-syn-comment:  #8E8173;
+  --dl-syn-glow:     38%;
+  --dl-syn-glow-blur: 9px;
+
+  --dl-file-ts:      #7CC4E8;
 }

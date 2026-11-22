@@ -5,6 +5,7 @@ import LoginPage from '../pages/Login/LoginPage.jsx';
 import DashboardPage from '../pages/Dashboard/DashboardPage.jsx';
 import ReposPage from '../pages/Repos/ReposPage.jsx';
 import RepoDetailPage from '../pages/RepoDetail/RepoDetailPage.jsx';
+import RepoChatPage from '../pages/RepoChat/RepoChatPage.jsx';
 import { ROUTES } from '../constants/index.js';
 
 const router = createBrowserRouter([
@@ -37,6 +38,14 @@ const router = createBrowserRouter([
     element: (
       <ProtectedRoute>
         <RepoDetailPage />
+      </ProtectedRoute>
+    ),
+  },
+  {
+    path: ROUTES.REPO_CHAT(':repoId'),
+    element: (
+      <ProtectedRoute>
+        <RepoChatPage />
       </ProtectedRoute>
     ),
   },

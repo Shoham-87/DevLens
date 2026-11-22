@@ -102,9 +102,6 @@ export default function useChatPanel() {
         buffer = remainder;
 
         for (const evt of events) {
-          // eslint-disable-next-line no-console
-          console.log('[chat sse]', evt.event, JSON.stringify(evt.data));
-
           if (evt.event === 'error') {
             throw new Error(evt.data || 'Chat stream reported an error');
           }
@@ -119,6 +116,10 @@ export default function useChatPanel() {
         console.error('Chat stream failed:', err);
         setError('Something went wrong while getting a response.');
       }
+      setMessages((prev) => {
+        const last = prev[prev.length - 1];
+        return last?.role === 'assistant' && !last.content ? prev.slice(0, -1) : prev;
+      });
     } finally {
       setIsStreaming(false);
       abortRef.current = null;
@@ -129,6 +130,11 @@ export default function useChatPanel() {
     abortRef.current?.abort();
   }, []);
 
+  const clearMessages = useCallback(() => {
+    setMessages([]);
+    setError(null);
+  }, []);
+
   return {
     messages,
     currentInput,
@@ -137,5 +143,6 @@ export default function useChatPanel() {
     error,
     sendMessage,
     cancelStreaming,
+    clearMessages,
   };
 }

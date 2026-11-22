@@ -19,6 +19,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.client.RestClientResponseException;
 
 import java.util.List;
 import java.util.Map;
@@ -165,6 +166,48 @@ public class RepoController {
                 ),
                 "repoUrl", "https://github.com/" + user.getUsername() + "/" + repo.getName()
         ));
+    }
+
+    @GetMapping("/repos/{repoId}/tree")
+    public ResponseEntity<?> getRepoTree(Authentication authentication, @PathVariable String repoId) {
+        String userId = (String) authentication.getPrincipal();
+        Optional<ConnectedRepo> connectedRepo = connectedRepoService.findByIdAndUserId(repoId, userId);
+        if (connectedRepo.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Repository Not Found.");
+        }
+        Users user = userService.findUserByUserId(userId);
+        try {
+            return ResponseEntity.ok(gitHubApiClient.fetchRepoTree(user.getGithubAccessToken(),
+                    user.getUsername(), connectedRepo.get().getName()));
+        } catch (RestClientResponseException e) {
+            log.error("Failed to fetch tree for repo {}: {}", repoId, e.getStatusCode());
+            return ResponseEntity.status(HttpStatus.BAD_GATEWAY).body("Could not load the repository tree from GitHub.");
+        }
+    }
+
+    @GetMapping("/repos/{repoId}/file")
+    public ResponseEntity<?> getRepoFile(Authentication authentication, @PathVariable String repoId,
+                                         @RequestParam String path) {
+        String userId = (String) authentication.getPrincipal();
+        Optional<ConnectedRepo> connectedRepo = connectedRepoService.findByIdAndUserId(repoId, userId);
+        if (connectedRepo.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Repository Not Found.");
+        }
+        if (path.isBlank() || path.contains("..")) {
+            return ResponseEntity.badRequest().body("Invalid file path.");
+        }
+        Users user = userService.findUserByUserId(userId);
+        try {
+            String content = gitHubApiClient.fetchFileContent(user.getGithubAccessToken(),
+                    user.getUsername(), connectedRepo.get().getName(), path);
+            return ResponseEntity.ok(Map.of("path", path, "content", content != null ? content : ""));
+        } catch (RestClientResponseException e) {
+            if (e.getStatusCode().value() == 404) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("File Not Found.");
+            }
+            log.error("Failed to fetch file {} for repo {}: {}", path, repoId, e.getStatusCode());
+            return ResponseEntity.status(HttpStatus.BAD_GATEWAY).body("Could not load the file from GitHub.");
+        }
     }
 
     @Async

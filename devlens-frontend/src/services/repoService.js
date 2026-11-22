@@ -24,3 +24,13 @@ export async function getRepoStatus(repoId) {
   const { data } = await api.get(`/repos/${repoId}/status`);
   return data;
 }
+
+export async function getRepoTree(repoId) {
+  const { data } = await api.get(`/repos/${repoId}/tree`);
+  return data;
+}
+
+export async function getRepoFile(repoId, path) {
+  const { data } = await api.get(`/repos/${repoId}/file`, { params: { path } });
+  return data;
+}

@@ -1,8 +1,7 @@
-import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import React from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 import AppLayout from '../../components/layout/AppLayout.jsx';
 import useRepoDetail from './useRepoDetail.js';
-import ChatPanel from './ChatPanel.jsx';
 import { REPO_STATUS, ROUTES } from '../../constants/index.js';
 import './RepoDetailPage.css';
 
@@ -90,7 +89,7 @@ function FeatureCard({ icon, title, desc, enabled, active, onActivate }) {
 
 export default function RepoDetailPage() {
   const { repo, status, isLoading, error, toast, handleDisconnect } = useRepoDetail();
-  const [isChatOpen, setIsChatOpen] = useState(false);
+  const navigate = useNavigate();
 
   const isIndexing =
     status?.status === REPO_STATUS.PENDING ||
@@ -167,10 +166,9 @@ export default function RepoDetailPage() {
               <FeatureCard
                 icon="💬"
                 title="Chat with codebase"
-                desc="Ask questions about your code in natural language."
+                desc="Browse the code and ask questions about it side by side."
                 enabled={isReady || features.chatEnabled}
-                active={isChatOpen}
-                onActivate={() => setIsChatOpen((open) => !open)}
+                onActivate={() => navigate(ROUTES.REPO_CHAT(repo.id))}
               />
               <FeatureCard
                 icon="✨"
@@ -185,8 +183,6 @@ export default function RepoDetailPage() {
                 enabled={features.prReviewEnabled}
               />
             </div>
-
-            {(isReady || features.chatEnabled) && isChatOpen && <ChatPanel />}
           </>
         )}
       </div>

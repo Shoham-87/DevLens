@@ -12,6 +12,7 @@ export const ROUTES = {
   DASHBOARD:  '/devlens/dashboard',
   REPOS:      '/devlens/repos',
   REPO_DETAIL: (id) => `/devlens/repos/${id}`,
+  REPO_CHAT:   (id) => `/devlens/repos/${id}/chat`,
 };
 
 export const PAGINATION = {

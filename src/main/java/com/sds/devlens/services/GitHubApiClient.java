@@ -8,8 +8,12 @@ import io.jsonwebtoken.lang.Objects;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClient;
+import org.springframework.web.util.DefaultUriBuilderFactory;
 
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class GitHubApiClient {
@@ -48,5 +52,47 @@ public class GitHubApiClient {
                     githubMeta.get("default_branch").asText() : "main");
         }
         return customNode;
+    }
+
+    public List<Map<String, Object>> fetchRepoTree(String githubAccessToken, String username, String repoName) {
+        JsonNode tree = githubClient(githubAccessToken, "application/vnd.github+json").get()
+                .uri("/repos/{username}/{repoName}/git/trees/HEAD?recursive=1", username, repoName)
+                .retrieve()
+                .body(JsonNode.class);
+
+        List<Map<String, Object>> entries = new ArrayList<>();
+        if (tree == null || !tree.has("tree")) {
+            return entries;
+        }
+        for (JsonNode node : tree.get("tree")) {
+            String type = node.path("type").asText();
+            if (!"blob".equals(type) && !"tree".equals(type)) {
+                continue;
+            }
+            Map<String, Object> entry = new LinkedHashMap<>();
+            entry.put("path", node.path("path").asText());
+            entry.put("type", "tree".equals(type) ? "dir" : "file");
+            entry.put("size", node.path("size").asLong(0));
+            entries.add(entry);
+        }
+        return entries;
+    }
+
+    public String fetchFileContent(String githubAccessToken, String username, String repoName, String path) {
+        return githubClient(githubAccessToken, "application/vnd.github.raw+json").get()
+                .uri("/repos/{username}/{repoName}/contents/{path}", username, repoName, path)
+                .retrieve()
+                .body(String.class);
+    }
+
+    private RestClient githubClient(String githubAccessToken, String accept) {
+        DefaultUriBuilderFactory uriFactory = new DefaultUriBuilderFactory("https://api.github.com");
+        uriFactory.setEncodingMode(DefaultUriBuilderFactory.EncodingMode.URI_COMPONENT);
+        return RestClient.builder()
+                .uriBuilderFactory(uriFactory)
+                .defaultHeader("Authorization", "Bearer " + githubAccessToken)
+                .defaultHeader("Accept", accept)
+                .defaultHeader("X-GitHub-Api-Version", "2022-11-28")
+                .build();
     }
 }

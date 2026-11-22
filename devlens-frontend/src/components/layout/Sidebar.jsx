@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { NavLink } from 'react-router-dom';
 import { ROUTES, REPO_STATUS } from '../../constants/index.js';
 import './Sidebar.css';
@@ -10,31 +10,69 @@ const STATUS_DOT_COLOR = {
   [REPO_STATUS.FAILED]:   'var(--dl-status-failed)',
 };
 
-export default function Sidebar({ connectedRepos = [], activeRoute }) {
+const STORAGE_KEY = 'dl.sidebar.collapsed';
+
+function readCollapsed() {
+  try {
+    return window.localStorage.getItem(STORAGE_KEY) === '1';
+  } catch {
+    return false;
+  }
+}
+
+function CollapseIcon({ collapsed }) {
   return (
-    <aside className="dl-sidebar d-flex flex-column">
+    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+      <rect x="1.5" y="2.5" width="13" height="11" rx="2" stroke="currentColor" strokeWidth="1.3" />
+      <line x1="6" y1="2.5" x2="6" y2="13.5" stroke="currentColor" strokeWidth="1.3" />
+      <path
+        d={collapsed ? 'M9 6l2 2-2 2' : 'M11 6L9 8l2 2'}
+        stroke="currentColor"
+        strokeWidth="1.3"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  );
+}
+
+export default function Sidebar({ connectedRepos = [], activeRoute }) {
+  const [collapsed, setCollapsed] = useState(readCollapsed);
+
+  function toggle() {
+    setCollapsed((prev) => {
+      const next = !prev;
+      try {
+        window.localStorage.setItem(STORAGE_KEY, next ? '1' : '0');
+      } catch {
+        return next;
+      }
+      return next;
+    });
+  }
+
+  const navClass = ({ isActive }) =>
+    'dl-sidebar__nav-item' + (isActive ? ' dl-sidebar__nav-item--active' : '');
+
+  return (
+    <aside className={`dl-sidebar d-flex flex-column ${collapsed ? 'dl-sidebar--collapsed' : ''}`}>
       <nav className="dl-sidebar__nav" aria-label="Main navigation">
-        <NavLink
-          to={ROUTES.DASHBOARD}
-          className={({ isActive }) =>
-            'dl-sidebar__nav-item' + (isActive ? ' dl-sidebar__nav-item--active' : '')
-          }
-        >
+        <NavLink to={ROUTES.DASHBOARD} className={navClass} title={collapsed ? 'Dashboard' : undefined}>
           <span className="dl-sidebar__nav-icon" aria-hidden="true">▣</span>
-          Dashboard
+          <span className="dl-sidebar__label">Dashboard</span>
         </NavLink>
-        <NavLink
-          to={ROUTES.REPOS}
-          className={({ isActive }) =>
-            'dl-sidebar__nav-item' + (isActive ? ' dl-sidebar__nav-item--active' : '')
-          }
-        >
+        <NavLink to={ROUTES.REPOS} className={navClass} title={collapsed ? 'Repositories' : undefined}>
           <span className="dl-sidebar__nav-icon" aria-hidden="true">⊞</span>
-          Repositories
+          <span className="dl-sidebar__label">Repositories</span>
         </NavLink>
-        <a href="#" className="dl-sidebar__nav-item dl-sidebar__nav-item--disabled" aria-disabled="true">
+        <a
+          href="#"
+          className="dl-sidebar__nav-item dl-sidebar__nav-item--disabled"
+          aria-disabled="true"
+          title={collapsed ? 'Settings' : undefined}
+        >
           <span className="dl-sidebar__nav-icon" aria-hidden="true">⚙</span>
-          Settings
+          <span className="dl-sidebar__label">Settings</span>
         </a>
       </nav>
 
@@ -49,6 +87,7 @@ export default function Sidebar({ connectedRepos = [], activeRoute }) {
                   className={({ isActive }) =>
                     'dl-sidebar__repo-item' + (isActive ? ' dl-sidebar__repo-item--active' : '')
                   }
+                  title={collapsed ? repo.name : undefined}
                 >
                   <span
                     className="dl-sidebar__status-dot"
@@ -62,6 +101,22 @@ export default function Sidebar({ connectedRepos = [], activeRoute }) {
           </ul>
         </div>
       )}
+
+      <div className="dl-sidebar__footer">
+        <button
+          type="button"
+          className="dl-sidebar__nav-item dl-sidebar__toggle"
+          onClick={toggle}
+          aria-label={collapsed ? 'Expand sidebar' : 'Collapse sidebar'}
+          aria-expanded={!collapsed}
+          title={collapsed ? 'Expand sidebar' : undefined}
+        >
+          <span className="dl-sidebar__nav-icon" aria-hidden="true">
+            <CollapseIcon collapsed={collapsed} />
+          </span>
+          <span className="dl-sidebar__label">Collapse</span>
+        </button>
+      </div>
     </aside>
   );
 }

@@ -5,7 +5,7 @@ import Sidebar from './Sidebar.jsx';
 import { useAuth } from '../../context/AuthContext.jsx';
 import './AppLayout.css';
 
-export default function AppLayout({ children, connectedRepos }) {
+export default function AppLayout({ children, connectedRepos, flush = false }) {
   const { user } = useAuth();
   const { pathname } = useLocation();
 
@@ -14,7 +14,7 @@ export default function AppLayout({ children, connectedRepos }) {
       <Navbar user={user} />
       <div className="dl-layout__body d-flex">
         <Sidebar connectedRepos={connectedRepos} activeRoute={pathname} />
-        <main className="dl-layout__main flex-grow-1 overflow-auto">
+        <main className={`dl-layout__main flex-grow-1 ${flush ? 'dl-layout__main--flush' : 'overflow-auto'}`}>
           {children}
         </main>
       </div>

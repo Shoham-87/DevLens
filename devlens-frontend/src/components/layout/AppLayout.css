@@ -14,3 +14,11 @@
   background-color: var(--dl-bg-base);
   padding: var(--dl-space-xl);
 }
+
+.dl-layout__main--flush {
+  padding: 0;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
