@@ -1,7 +1,8 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import AppLayout from '../../components/layout/AppLayout.jsx';
 import useRepoDetail from './useRepoDetail.js';
+import ChatPanel from './ChatPanel.jsx';
 import { REPO_STATUS, ROUTES } from '../../constants/index.js';
 import './RepoDetailPage.css';
 
@@ -59,13 +60,24 @@ function StatsRow({ repo, status }) {
   );
 }
 
-function FeatureCard({ icon, title, desc, enabled }) {
+function FeatureCard({ icon, title, desc, enabled, active, onActivate }) {
+  function handleKeyDown(e) {
+    if (!enabled || !onActivate) return;
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      onActivate();
+    }
+  }
+
   return (
     <div
-      className={`rd-feature-card ${enabled ? 'rd-feature-card--unlocked' : 'rd-feature-card--locked'}`}
+      className={`rd-feature-card ${enabled ? 'rd-feature-card--unlocked' : 'rd-feature-card--locked'} ${active ? 'rd-feature-card--active' : ''}`}
       role={enabled ? 'button' : undefined}
       tabIndex={enabled ? 0 : undefined}
       aria-disabled={!enabled}
+      aria-pressed={enabled && onActivate ? active : undefined}
+      onClick={enabled ? onActivate : undefined}
+      onKeyDown={handleKeyDown}
     >
       <div className="rd-feature-card__icon" aria-hidden="true">{icon}</div>
       <div className="rd-feature-card__title">{title}</div>
@@ -78,11 +90,13 @@ function FeatureCard({ icon, title, desc, enabled }) {
 
 export default function RepoDetailPage() {
   const { repo, status, isLoading, error, toast, handleDisconnect } = useRepoDetail();
+  const [isChatOpen, setIsChatOpen] = useState(false);
 
   const isIndexing =
     status?.status === REPO_STATUS.PENDING ||
     status?.status === REPO_STATUS.INDEXING;
 
+  const isReady = status?.status === REPO_STATUS.READY;
   const features = repo?.features ?? {};
 
   return (
@@ -154,7 +168,9 @@ export default function RepoDetailPage() {
                 icon="💬"
                 title="Chat with codebase"
                 desc="Ask questions about your code in natural language."
-                enabled={features.chatEnabled}
+                enabled={isReady || features.chatEnabled}
+                active={isChatOpen}
+                onActivate={() => setIsChatOpen((open) => !open)}
               />
               <FeatureCard
                 icon="✨"
@@ -169,6 +185,8 @@ export default function RepoDetailPage() {
                 enabled={features.prReviewEnabled}
               />
             </div>
+
+            {(isReady || features.chatEnabled) && isChatOpen && <ChatPanel />}
           </>
         )}
       </div>

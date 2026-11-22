@@ -212,6 +212,11 @@
   box-shadow: var(--dl-shadow-card-hover);
 }
 
+.rd-feature-card--active {
+  border-color: var(--dl-primary);
+  box-shadow: var(--dl-shadow-focus);
+}
+
 .rd-feature-card__icon {
   font-size: 1.4rem;
   margin-bottom: var(--dl-space-sm);
