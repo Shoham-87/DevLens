@@ -6,4 +6,5 @@ import org.springframework.http.ResponseEntity;
 public interface Ingestion {
     public String checkHealth();
     public ResponseEntity<Void> triggerIngestion(IngestRequest ingestRequest);
+    public ResponseEntity<Void> deleteRepoData(String connectedRepoId);
 }

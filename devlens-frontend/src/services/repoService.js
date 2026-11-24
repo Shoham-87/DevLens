@@ -25,6 +25,10 @@ export async function getRepoStatus(repoId) {
   return data;
 }
 
+export async function disconnectRepo(repoId) {
+  await api.delete(`/repos/${repoId}`);
+}
+
 export async function getRepoTree(repoId) {
   const { data } = await api.get(`/repos/${repoId}/tree`);
   return data;

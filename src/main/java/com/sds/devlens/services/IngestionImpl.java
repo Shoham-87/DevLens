@@ -34,4 +34,11 @@ public class IngestionImpl implements Ingestion{
                 .retrieve().toBodilessEntity();
     }
 
+    @Override
+    public ResponseEntity<Void> deleteRepoData(String connectedRepoId) {
+        return restClient.delete()
+                .uri("/repos/{connectedRepoId}", connectedRepoId)
+                .retrieve().toBodilessEntity();
+    }
+
 }

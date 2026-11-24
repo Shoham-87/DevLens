@@ -11,4 +11,5 @@ public interface ConnectedRepoService {
     public ConnectedRepo createConnectedRepo(String userid,Long githubRepoId,String name,
                                              String repoUrl,String language,String status);
     public Optional<ConnectedRepo> findByIdAndUserId(String id,String userId);
+    public void deleteConnectedRepo(ConnectedRepo connectedRepo);
 }

@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import useChatPanel from './useChatPanel.js';
 import { highlightCode } from './highlight.js';
 import './ChatPanel.css';
@@ -280,6 +280,61 @@ function renderBlocks(text, keyPrefix, resolvePath, onCitation) {
 
 const FENCE_ALIASES = { js: 'javascript', ts: 'typescript', py: 'python', sh: 'bash', shell: 'bash', yml: 'yaml', html: 'xml', kt: 'kotlin', cs: 'csharp' };
 
+async function copyText(text) {
+  if (navigator.clipboard && window.isSecureContext) {
+    await navigator.clipboard.writeText(text);
+    return;
+  }
+  const area = document.createElement('textarea');
+  area.value = text;
+  area.setAttribute('readonly', '');
+  area.style.position = 'fixed';
+  area.style.opacity = '0';
+  document.body.appendChild(area);
+  area.select();
+  const ok = document.execCommand('copy');
+  document.body.removeChild(area);
+  if (!ok) throw new Error('Copy failed');
+}
+
+function CodeBlock({ code, lang }) {
+  const [copyState, setCopyState] = useState('idle');
+  const timerRef = useRef(null);
+  const html = highlightCode(code, FENCE_ALIASES[lang] ?? lang);
+
+  useEffect(() => () => clearTimeout(timerRef.current), []);
+
+  async function handleCopy() {
+    try {
+      await copyText(code);
+      setCopyState('copied');
+    } catch {
+      setCopyState('failed');
+    }
+    clearTimeout(timerRef.current);
+    timerRef.current = setTimeout(() => setCopyState('idle'), 1800);
+  }
+
+  const label = copyState === 'copied' ? 'Copied' : copyState === 'failed' ? 'Copy failed' : 'Copy';
+
+  return (
+    <div className="cp-codeblock">
+      <div className="cp-codeblock__bar">
+        <span className="cp-codeblock__lang">{lang || 'code'}</span>
+        <button
+          type="button"
+          className={`cp-codeblock__copy${copyState === 'copied' ? ' cp-codeblock__copy--done' : ''}`}
+          onClick={handleCopy}
+          aria-label="Copy code to clipboard"
+        >
+          {label}
+        </button>
+      </div>
+      <pre className="cp-block syn" dangerouslySetInnerHTML={{ __html: html }} />
+    </div>
+  );
+}
+
 function MessageBody({ content, resolvePath, onCitation }) {
   const segments = content.split(/```([^\n`]*)\n?/);
   const out = [];
@@ -289,8 +344,7 @@ function MessageBody({ content, resolvePath, onCitation }) {
     );
     if (i + 2 < segments.length) {
       const lang = segments[i + 1].trim().toLowerCase();
-      const html = highlightCode(segments[i + 2].replace(/\n$/, ''), FENCE_ALIASES[lang] ?? lang);
-      out.push(<pre key={`c${i}`} className="cp-block syn" dangerouslySetInnerHTML={{ __html: html }} />);
+      out.push(<CodeBlock key={`c${i}`} code={segments[i + 2].replace(/\n$/, '')} lang={lang} />);
     }
   }
   return out;

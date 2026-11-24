@@ -1,10 +1,13 @@
 import { useCallback, useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
-import { getRepoDetail, getRepoStatus } from '../../services/repoService.js';
-import { REPO_STATUS, STATUS_POLL_INTERVAL_MS } from '../../constants/index.js';
+import { useNavigate, useParams } from 'react-router-dom';
+import { disconnectRepo, getRepoDetail, getRepoStatus } from '../../services/repoService.js';
+import { REPO_STATUS, ROUTES, STATUS_POLL_INTERVAL_MS } from '../../constants/index.js';
 
 export default function useRepoDetail() {
   const { repoId } = useParams();
+  const navigate = useNavigate();
+  const [confirmOpen, setConfirmOpen] = useState(false);
+  const [isDisconnecting, setIsDisconnecting] = useState(false);
   const [repo, setRepo]         = useState(null);
   const [status, setStatus]     = useState(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -55,10 +58,34 @@ export default function useRepoDetail() {
     }
   }, [status]);
 
-  const handleDisconnect = useCallback(() => {
-    setToast('Disconnect feature coming soon.');
-    setTimeout(() => setToast(null), 3000);
+  const showToast = useCallback((message) => {
+    setToast(message);
+    setTimeout(() => setToast(null), 4000);
   }, []);
 
-  return { repo, status, isLoading, error, toast, handleDisconnect };
+  const requestDisconnect = useCallback(() => setConfirmOpen(true), []);
+
+  const cancelDisconnect = useCallback(() => {
+    if (!isDisconnecting) setConfirmOpen(false);
+  }, [isDisconnecting]);
+
+  const handleDisconnect = useCallback(async () => {
+    setIsDisconnecting(true);
+    try {
+      await disconnectRepo(repoId);
+      navigate(ROUTES.DASHBOARD, { replace: true });
+    } catch (err) {
+      const message = typeof err.response?.data === 'string' && err.response.data
+        ? err.response.data
+        : 'Failed to disconnect the repository. Please try again.';
+      setIsDisconnecting(false);
+      setConfirmOpen(false);
+      showToast(message);
+    }
+  }, [repoId, navigate, showToast]);
+
+  return {
+    repo, status, isLoading, error, toast,
+    confirmOpen, isDisconnecting, requestDisconnect, cancelDisconnect, handleDisconnect,
+  };
 }

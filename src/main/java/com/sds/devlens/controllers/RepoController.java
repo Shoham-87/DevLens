@@ -19,6 +19,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestClientResponseException;
 
 import java.util.List;
@@ -208,6 +209,24 @@ public class RepoController {
             log.error("Failed to fetch file {} for repo {}: {}", path, repoId, e.getStatusCode());
             return ResponseEntity.status(HttpStatus.BAD_GATEWAY).body("Could not load the file from GitHub.");
         }
+    }
+
+    @DeleteMapping("/repos/{repoId}")
+    public ResponseEntity<?> disconnectRepo(Authentication authentication, @PathVariable String repoId) {
+        String userId = (String) authentication.getPrincipal();
+        Optional<ConnectedRepo> connectedRepo = connectedRepoService.findByIdAndUserId(repoId, userId);
+        if (connectedRepo.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Repository Not Found.");
+        }
+        try {
+            ingestion.deleteRepoData(repoId);
+        } catch (RestClientException e) {
+            log.error("Failed to remove indexed data for repo {}: {}", repoId, e.getMessage());
+            return ResponseEntity.status(HttpStatus.BAD_GATEWAY)
+                    .body("Could not remove the indexed data. Please try again.");
+        }
+        connectedRepoService.deleteConnectedRepo(connectedRepo.get());
+        return ResponseEntity.noContent().build();
     }
 
     @Async

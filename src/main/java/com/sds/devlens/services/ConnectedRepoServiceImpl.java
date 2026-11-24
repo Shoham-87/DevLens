@@ -47,4 +47,8 @@ public class ConnectedRepoServiceImpl implements ConnectedRepoService{
     public Optional<ConnectedRepo> findByIdAndUserId(String id,String userId){
         return Optional.ofNullable(connectedRepoRepository.findByIdAndUserId(id,userId));
     }
+    @Override
+    public void deleteConnectedRepo(ConnectedRepo connectedRepo){
+        connectedRepoRepository.delete(connectedRepo);
+    }
 }

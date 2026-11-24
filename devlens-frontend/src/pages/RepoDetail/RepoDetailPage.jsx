@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import AppLayout from '../../components/layout/AppLayout.jsx';
 import useRepoDetail from './useRepoDetail.js';
@@ -59,7 +59,48 @@ function StatsRow({ repo, status }) {
   );
 }
 
-function FeatureCard({ icon, title, desc, enabled, active, onActivate }) {
+function DisconnectDialog({ repoName, isIndexing, isBusy, onCancel, onConfirm }) {
+  const cancelRef = useRef(null);
+
+  useEffect(() => {
+    cancelRef.current?.focus();
+    function handleKey(e) {
+      if (e.key === 'Escape') onCancel();
+    }
+    document.addEventListener('keydown', handleKey);
+    return () => document.removeEventListener('keydown', handleKey);
+  }, [onCancel]);
+
+  return (
+    <div className="rd-dialog-backdrop" onClick={onCancel}>
+      <div
+        className="rd-dialog"
+        role="alertdialog"
+        aria-modal="true"
+        aria-labelledby="rd-dialog-title"
+        aria-describedby="rd-dialog-desc"
+        onClick={(e) => e.stopPropagation()}
+      >
+        <h2 id="rd-dialog-title" className="rd-dialog__title">Disconnect {repoName}?</h2>
+        <p id="rd-dialog-desc" className="rd-dialog__desc">
+          This removes the repository from DevLens and deletes its indexed code and overview.
+          {isIndexing && ' Indexing in progress will be stopped.'}
+          {' '}Your GitHub repository is not affected, and you can connect it again later.
+        </p>
+        <div className="rd-dialog__actions">
+          <button ref={cancelRef} type="button" className="rd-github-btn" onClick={onCancel} disabled={isBusy}>
+            Cancel
+          </button>
+          <button type="button" className="rd-danger-btn" onClick={onConfirm} disabled={isBusy}>
+            {isBusy ? 'Disconnecting…' : 'Disconnect'}
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function FeatureCard({ icon, title, desc, actionLabel, enabled, active, onActivate }) {
   function handleKeyDown(e) {
     if (!enabled || !onActivate) return;
     if (e.key === 'Enter' || e.key === ' ') {
@@ -79,16 +120,26 @@ function FeatureCard({ icon, title, desc, enabled, active, onActivate }) {
       onKeyDown={handleKeyDown}
     >
       <div className="rd-feature-card__icon" aria-hidden="true">{icon}</div>
-      <div className="rd-feature-card__title">{title}</div>
-      <div className="rd-feature-card__desc">
-        {enabled ? desc : 'Available after indexing'}
+      <div className="rd-feature-card__text">
+        <div className="rd-feature-card__title">{title}</div>
+        <div className="rd-feature-card__desc">
+          {enabled ? desc : 'Available after indexing'}
+        </div>
       </div>
+      {actionLabel && (
+        <span className="rd-feature-card__action" aria-hidden="true">
+          {enabled ? `${actionLabel} →` : 'Locked'}
+        </span>
+      )}
     </div>
   );
 }
 
 export default function RepoDetailPage() {
-  const { repo, status, isLoading, error, toast, handleDisconnect } = useRepoDetail();
+  const {
+    repo, status, isLoading, error, toast,
+    confirmOpen, isDisconnecting, requestDisconnect, cancelDisconnect, handleDisconnect,
+  } = useRepoDetail();
   const navigate = useNavigate();
 
   const isIndexing =
@@ -146,8 +197,8 @@ export default function RepoDetailPage() {
                   ↗ View on GitHub
                 </a>
                 <button
-                  className="rd-github-btn"
-                  onClick={handleDisconnect}
+                  className="rd-github-btn rd-disconnect-btn"
+                  onClick={requestDisconnect}
                   aria-label="Disconnect repository"
                 >
                   Disconnect
@@ -167,25 +218,24 @@ export default function RepoDetailPage() {
                 icon="💬"
                 title="Chat with codebase"
                 desc="Browse the code and ask questions about it side by side."
+                actionLabel="Open chat"
                 enabled={isReady || features.chatEnabled}
                 onActivate={() => navigate(ROUTES.REPO_CHAT(repo.id))}
-              />
-              <FeatureCard
-                icon="✨"
-                title="Library recommendations"
-                desc="AI suggests better libraries based on your stack."
-                enabled={features.recsEnabled}
-              />
-              <FeatureCard
-                icon="🔀"
-                title="PR auto-review"
-                desc="DevLens posts an AI review comment on new PRs."
-                enabled={features.prReviewEnabled}
               />
             </div>
           </>
         )}
       </div>
+
+      {confirmOpen && repo && (
+        <DisconnectDialog
+          repoName={repo.name}
+          isIndexing={isIndexing}
+          isBusy={isDisconnecting}
+          onCancel={cancelDisconnect}
+          onConfirm={handleDisconnect}
+        />
+      )}
 
       {toast && (
         <div className="rd-toast" role="status" aria-live="polite">{toast}</div>
