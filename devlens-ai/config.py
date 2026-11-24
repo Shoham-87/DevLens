@@ -14,6 +14,11 @@ class Setting(BaseSettings):
     jina_api_key : str
     groq_api_key : str
     incoming_db_schema_name : str = Field(alias="devlens.app.incoming.request.schema.name")
+    chat_model: str = Field(alias="devlens.app.llm.chat_model", default="openai/gpt-oss-120b")
+    router_model: str = Field(alias="devlens.app.llm.router_model", default="openai/gpt-oss-20b")
+    overview_model: str = Field(alias="devlens.app.llm.overview_model", default="openai/gpt-oss-120b")
+    rerank_enabled: bool = Field(alias="devlens.app.rag.rerank_enabled", default=True)
+    max_history_messages: int = Field(alias="devlens.app.rag.max_history_messages", default=10)
 
     @field_validator("excluded_dirs", "allowed_extensions", mode="before")
     @classmethod

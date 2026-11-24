@@ -10,6 +10,7 @@ from config import setting
 from routers.ingestion import router as ingestion
 from routers.chat import router as chat
 from enums.IncomingDB import IncomingDB
+from db.pgvector import ensure_schema
 
 
 async def setup_connection(conn):
@@ -27,6 +28,7 @@ async def lifeCycle(app:FastAPI):
     )
     await app.state.db_pool.open()
     await app.state.db_pool.wait()
+    await ensure_schema(app.state.db_pool)
     if setting.incoming_db == IncomingDB.MONGO.value.lower():
         print("MongoDB configuration detected. Initializing client...")
         client = AsyncIOMotorClient(setting.incoming_database_uri)
@@ -34,14 +36,13 @@ async def lifeCycle(app:FastAPI):
         app.state.mongo_db = client[setting.incoming_db_schema_name]
     else:
         print(f"Skipping MongoDB. Configured DB is: {setting.incoming_db}")
+        app.state.mongo_client = None
         app.state.mongo_db = None
     yield
 
     print("Closing psycopg connection pool...")
     await app.state.db_pool.close()
-    if app.state.mongo_db:
-        app.state.mongo_db.close()
-    if app.state.mongo_client:
+    if app.state.mongo_client is not None:
         app.state.mongo_client.close()
 
 app=FastAPI(lifespan=lifeCycle)

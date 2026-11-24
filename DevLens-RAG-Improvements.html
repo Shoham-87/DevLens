@@ -1,0 +1,397 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>DevLens RAG Improvements</title>
+<style>
+:root {
+  --bg: #fbfaf7;
+  --surface: #ffffff;
+  --surface-2: #f3f1ec;
+  --text: #1d1c1a;
+  --muted: #5f5c55;
+  --border: #e2ded5;
+  --accent: #b4532a;
+  --accent-soft: #f6e7df;
+  --good: #2f6b3f;
+  --good-soft: #e3f0e6;
+  --bad: #9a2c2c;
+  --bad-soft: #f6e1e1;
+  --code-bg: #f4f2ed;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #161514;
+    --surface: #1f1e1c;
+    --surface-2: #272523;
+    --text: #ece9e3;
+    --muted: #a7a299;
+    --border: #36332f;
+    --accent: #e08a5f;
+    --accent-soft: #3a2a22;
+    --good: #8fcf9e;
+    --good-soft: #1f3226;
+    --bad: #ec9a9a;
+    --bad-soft: #3a2222;
+    --code-bg: #242220;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #161514;
+  --surface: #1f1e1c;
+  --surface-2: #272523;
+  --text: #ece9e3;
+  --muted: #a7a299;
+  --border: #36332f;
+  --accent: #e08a5f;
+  --accent-soft: #3a2a22;
+  --good: #8fcf9e;
+  --good-soft: #1f3226;
+  --bad: #ec9a9a;
+  --bad-soft: #3a2222;
+  --code-bg: #242220;
+}
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font: 16px/1.6 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+}
+.wrap { max-width: 920px; margin: 0 auto; padding: 48px 16px 80px; }
+header { border-bottom: 1px solid var(--border); padding-bottom: 28px; margin-bottom: 36px; }
+.eyebrow { color: var(--accent); font-weight: 600; font-size: 13px; letter-spacing: .08em; text-transform: uppercase; }
+h1 { font-size: clamp(28px, 5vw, 40px); line-height: 1.15; margin: 8px 0 12px; letter-spacing: -.01em; }
+.lede { color: var(--muted); font-size: 18px; margin: 0; max-width: 680px; }
+h2 { font-size: 24px; margin: 56px 0 12px; letter-spacing: -.005em; }
+h3 { font-size: 18px; margin: 28px 0 8px; }
+p { margin: 0 0 14px; }
+a { color: var(--accent); }
+code { font-family: ui-monospace, SFMono-Regular, Consolas, "Liberation Mono", monospace; font-size: .88em; background: var(--code-bg); padding: 1px 5px; border-radius: 4px; }
+pre { background: var(--code-bg); border: 1px solid var(--border); border-radius: 8px; padding: 14px 16px; overflow-x: auto; font-size: 13.5px; line-height: 1.5; margin: 0 0 16px; }
+pre code { background: none; padding: 0; font-size: inherit; }
+.toc { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 18px 22px; }
+.toc ol { margin: 6px 0 0; padding-left: 20px; columns: 2; column-gap: 32px; }
+.toc li { margin: 3px 0; break-inside: avoid; }
+.summary { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; margin: 20px 0 0; }
+.stat { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 16px; }
+.stat b { display: block; font-size: 15px; margin-bottom: 4px; }
+.stat span { color: var(--muted); font-size: 14px; }
+.cards { display: grid; gap: 14px; }
+.card { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 18px 20px; }
+.card h3 { margin-top: 0; }
+.tag { display: inline-block; font-size: 12px; font-weight: 600; padding: 2px 8px; border-radius: 999px; margin-right: 6px; vertical-align: 2px; }
+.tag.bad { background: var(--bad-soft); color: var(--bad); }
+.tag.good { background: var(--good-soft); color: var(--good); }
+.tag.acc { background: var(--accent-soft); color: var(--accent); }
+.compare { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin: 12px 0 18px; }
+.compare > div { border-radius: 10px; padding: 14px 16px; border: 1px solid var(--border); background: var(--surface); }
+.compare h4 { margin: 0 0 8px; font-size: 14px; text-transform: uppercase; letter-spacing: .06em; }
+.compare .before h4 { color: var(--bad); }
+.compare .after h4 { color: var(--good); }
+.compare ul { margin: 0; padding-left: 18px; }
+.compare li { margin: 4px 0; font-size: 15px; }
+table { width: 100%; border-collapse: collapse; font-size: 15px; background: var(--surface); border: 1px solid var(--border); border-radius: 10px; overflow: hidden; }
+th, td { text-align: left; padding: 10px 14px; border-bottom: 1px solid var(--border); vertical-align: top; }
+th { background: var(--surface-2); font-size: 13px; text-transform: uppercase; letter-spacing: .05em; color: var(--muted); }
+tr:last-child td { border-bottom: none; }
+.table-scroll { overflow-x: auto; margin: 12px 0 18px; }
+.flow { display: flex; flex-wrap: wrap; align-items: stretch; gap: 8px; margin: 16px 0 20px; }
+.flow .step { flex: 1 1 140px; background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 12px 14px; font-size: 14px; position: relative; }
+.flow .step b { display: block; font-size: 14px; color: var(--accent); margin-bottom: 2px; }
+.flow .step.new { border-color: var(--accent); box-shadow: inset 3px 0 0 var(--accent); }
+.branch { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin: 8px 0 20px; }
+.branch > div { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 14px 16px; font-size: 15px; }
+.branch h4 { margin: 0 0 6px; font-size: 15px; }
+.branch ol { margin: 0; padding-left: 20px; }
+.note { background: var(--accent-soft); border-left: 3px solid var(--accent); border-radius: 6px; padding: 12px 16px; margin: 16px 0; font-size: 15px; }
+.files { columns: 2; column-gap: 28px; padding-left: 20px; }
+.files li { break-inside: avoid; margin: 4px 0; }
+footer { margin-top: 64px; padding-top: 20px; border-top: 1px solid var(--border); color: var(--muted); font-size: 14px; }
+@media (max-width: 640px) {
+  .wrap { padding-top: 32px; }
+  .toc ol, .files { columns: 1; }
+  .compare, .branch { grid-template-columns: 1fr; }
+  h2 { margin-top: 44px; }
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header>
+  <div class="eyebrow">DevLens AI service &middot; November 2026</div>
+  <h1>Making the code chat answer whole-project questions</h1>
+  <p class="lede">Why the RAG pipeline in <code>devlens-ai</code> could only answer narrow lookups, what was changed in ingestion and retrieval, and how to verify it.</p>
+  <div class="summary">
+    <div class="stat"><b>The problem</b><span>Questions like &ldquo;How to improve this project?&rdquo; and follow-ups like &ldquo;What changes do I need to make?&rdquo; returned irrelevant code or &ldquo;I couldn&rsquo;t find that&rdquo;.</span></div>
+    <div class="stat"><b>The fix</b><span>Index the repo at three levels (repo, file, code), route each question to the right level, and combine vector and keyword search.</span></div>
+    <div class="stat"><b>Action needed</b><span>Re-ingest every connected repo. Old indexes have no file summaries or repo overview.</span></div>
+  </div>
+</header>
+
+<nav class="toc" aria-label="Contents">
+  <strong>Contents</strong>
+  <ol>
+    <li><a href="#why">Why the old pipeline failed</a></li>
+    <li><a href="#approach">The approach</a></li>
+    <li><a href="#ingestion">Ingestion changes</a></li>
+    <li><a href="#chunker">Chunker changes</a></li>
+    <li><a href="#retrieval">Retrieval changes</a></li>
+    <li><a href="#prompt">Prompt changes</a></li>
+    <li><a href="#fixes">Bugs fixed along the way</a></li>
+    <li><a href="#config">Configuration</a></li>
+    <li><a href="#verify">How it was verified</a></li>
+    <li><a href="#next">Next steps</a></li>
+  </ol>
+</nav>
+
+<section id="why">
+<h2>1. Why the old pipeline failed</h2>
+<p>The original flow was: clone the repo, extract functions with tree-sitter, embed each function with Jina, store it in pgvector, then answer a question by embedding it and pulling the 8 most similar functions. That works for &ldquo;where is <code>save_chunks</code> defined?&rdquo; but breaks for anything broader. Four separate causes stacked on top of each other.</p>
+
+<div class="cards">
+  <div class="card">
+    <h3><span class="tag bad">Root cause 1</span>Nothing in the index described the whole project</h3>
+    <p>Only function and method bodies were stored. A question like &ldquo;how can I improve this project?&rdquo; has no close match among individual functions, so the top 8 results were effectively random, and the model had no picture of the architecture, tech stack or file layout to reason about.</p>
+  </div>
+  <div class="card">
+    <h3><span class="tag bad">Root cause 2</span>Large parts of the code were never indexed</h3>
+    <p>For supported languages, a file with no function matches returned zero chunks. Enums (<code>enums/Status.py</code>), the fields of Pydantic models (<code>models/requests.py</code>), most of the settings class in <code>config.py</code>, class declarations, imports and top-level wiring such as router registration in <code>main.py</code> were all invisible to search. Python decorators like <code>@router.post("/chat")</code> were also cut off from their functions.</p>
+  </div>
+  <div class="card">
+    <h3><span class="tag bad">Root cause 3</span>Follow-up questions were searched without their history</h3>
+    <p>Only the latest message was embedded. &ldquo;What changes do I need to make?&rdquo; means nothing on its own; the subject (&ldquo;the ingestion pipeline&rdquo;) lives in the previous turn. The history was passed to the answering model but not to the search.</p>
+  </div>
+  <div class="card">
+    <h3><span class="tag bad">Root cause 4</span>The prompt forbade recommendations</h3>
+    <p>The system prompt said to answer using <em>only</em> the context and otherwise reply &ldquo;I couldn&rsquo;t find that in the indexed codebase.&rdquo; An improvement question needs engineering judgement applied to the code, which that rule ruled out even when the right code was retrieved.</p>
+  </div>
+</div>
+
+<p style="margin-top:16px">Two weaker spots made specific questions less reliable too: pure vector search is poor at exact identifiers like <code>updateFilesProcessed</code>, and there was no reranking step to put the best of the candidates first.</p>
+</section>
+
+<section id="approach">
+<h2>2. The approach</h2>
+<p>The fix gives the index three levels of detail and teaches the query side to pick the right level for each question.</p>
+
+<div class="table-scroll">
+<table>
+  <thead><tr><th>Level</th><th>What is stored</th><th>Answers questions like</th></tr></thead>
+  <tbody>
+    <tr><td><b>Repo</b></td><td>One LLM-written overview per repo (purpose, tech stack, architecture, key files, weak spots) plus the file tree. Table <code>repo_overview</code>.</td><td>&ldquo;What does this project do?&rdquo;, &ldquo;How can I improve it?&rdquo;</td></tr>
+    <tr><td><b>File</b></td><td>One summary chunk per file: imports and the signatures of every class and function. <code>chunk_type = 'file_summary'</code>.</td><td>&ldquo;Which part handles auth?&rdquo;, &ldquo;How is the backend structured?&rdquo;</td></tr>
+    <tr><td><b>Code</b></td><td>Functions, methods, class headers and top-level module code, each with file path and line range.</td><td>&ldquo;Where is X called?&rdquo;, &ldquo;Why does Y fail?&rdquo;</td></tr>
+  </tbody>
+</table>
+</div>
+</section>
+
+<section id="ingestion">
+<h2>3. Ingestion changes</h2>
+<p>File: <code>services/pipeline.py</code>, new <code>services/overview.py</code>.</p>
+
+<div class="flow" role="list" aria-label="Ingestion flow">
+  <div class="step" role="listitem"><b>1. Clone</b>Working copy in <code>tmp/</code></div>
+  <div class="step" role="listitem"><b>2. Walk</b>Filter by extension, size, binary</div>
+  <div class="step new" role="listitem"><b>3. Clear old index</b>Delete the repo&rsquo;s chunks and overview</div>
+  <div class="step new" role="listitem"><b>4. Chunk + summarize</b>Code chunks and one file summary per file</div>
+  <div class="step new" role="listitem"><b>5. Embed + save in batches</b>200 chunks at a time</div>
+  <div class="step new" role="listitem"><b>6. Repo overview</b>One LLM call, stored in <code>repo_overview</code></div>
+</div>
+
+<div class="compare">
+  <div class="before"><h4>Before</h4><ul>
+    <li>Re-ingesting a repo inserted a second copy of every chunk.</li>
+    <li>All chunks and embeddings were held in memory until the very end.</li>
+    <li>No file-level or repo-level information.</li>
+    <li>Embedded text was the raw code only.</li>
+  </ul></div>
+  <div class="after"><h4>After</h4><ul>
+    <li>Old chunks are deleted first, so re-ingesting replaces the index.</li>
+    <li>Chunks are embedded and saved every 200, keeping memory flat.</li>
+    <li>File summaries and a repo overview are built every time.</li>
+    <li>Embedded text is prefixed with <code>File: &lt;path&gt;</code> and <code>Type: &lt;chunk_type&gt;</code>, so the vector knows where the code lives.</li>
+  </ul></div>
+</div>
+
+<h3>File summaries cost nothing</h3>
+<p>Summaries are built from the chunks already extracted, with no LLM call. That matters because Groq&rsquo;s free tier allows only a few thousand tokens per minute; an LLM summary per file would make ingesting a 200-file repo take most of an hour. Example output:</p>
+<pre><code>File summary: services/rag.py
+Language: py | Lines: 184
+Imports / dependencies:
+import json
+from langchain_groq import ChatGroq
+from db.pgvector import similarity_search, keyword_search, get_repo_overview
+Defines:
+- [function] def create_llm(groq_key: str, model: str, streaming: bool = True) -&gt; ChatGroq: (line 44)
+- [function] async def route_question(question: str, history: list[dict], groq_key: str) -&gt; dict: (line 58)
+- [function] async def hybrid_search(...) (line 98)</code></pre>
+
+<h3>The repo overview</h3>
+<p>One call to the overview model gets the file tree, README, dependency manifests (<code>requirements.txt</code>, <code>pom.xml</code>, <code>package.json</code>, Dockerfile and so on, at the root and one level down) and as many file summaries as fit in about 24,000 characters. It returns Markdown with fixed sections: Purpose, Tech stack, Architecture &amp; data flow, Key files, Weak spots &amp; improvement opportunities. If the LLM call fails, the raw material is stored instead, which is still far more useful for broad questions than nothing.</p>
+</section>
+
+<section id="chunker">
+<h2>4. Chunker changes</h2>
+<p>File: <code>services/chunker.py</code>. The existing structure and naming were kept.</p>
+
+<div class="table-scroll">
+<table>
+  <thead><tr><th>Change</th><th>Why</th></tr></thead>
+  <tbody>
+    <tr><td>Capture classes, interfaces, enums, structs and traits for every supported language</td><td>Type definitions, fields and Pydantic/Spring model shapes were missing from the index.</td></tr>
+    <tr><td>Class chunks hold only the header (decorators, fields, signature) up to the first method, capped at 80 lines</td><td>Methods already get their own chunks; storing the whole class would duplicate them.</td></tr>
+    <tr><td>New <code>module</code> chunks for lines outside every function and class</td><td>Imports, constants, app and router wiring are now searchable.</td></tr>
+    <tr><td>Include Python decorators with their function</td><td><code>@router.post("/chat")</code> is how you find an endpoint.</td></tr>
+    <tr><td>Skip functions nested inside other functions</td><td>The parent chunk already contains them.</td></tr>
+    <tr><td>Split functions longer than 150 lines into 120-line windows with 20 lines of overlap</td><td>Keeps chunks focused and within the embedding model&rsquo;s input limit.</td></tr>
+    <tr><td>Fall back to sliding windows when a parsed file yields nothing</td><td>No supported file is silently dropped.</td></tr>
+    <tr><td>Added <code>.jsx</code> and <code>.tsx</code> parsing</td><td>The React frontend previously got only generic 60-line windows.</td></tr>
+    <tr><td>Paths stored with forward slashes</td><td>Consistent citations whether ingestion runs on Windows or Linux.</td></tr>
+  </tbody>
+</table>
+</div>
+
+<div class="note"><b>Crash fix.</b> Reading <code>node.end_point</code> in tree-sitter 0.26 on Python 3.14 intermittently causes an access violation that kills the process. The original chunker used it too, so ingestion could die partway through a repo. Line numbers are now computed from byte offsets using a precomputed list of newline positions and <code>bisect</code>, which avoids that call entirely and gives identical results.</div>
+</section>
+
+<section id="retrieval">
+<h2>5. Retrieval changes</h2>
+<p>Files: <code>services/rag.py</code>, <code>db/pgvector.py</code>, <code>services/embedder.py</code>.</p>
+
+<div class="flow" role="list" aria-label="Query flow">
+  <div class="step new" role="listitem"><b>1. Route</b>Rewrite with history, label scope, pick keywords</div>
+  <div class="step" role="listitem"><b>2. Embed</b>Rewritten question + keywords</div>
+  <div class="step new" role="listitem"><b>3. Retrieve</b>Different context per scope</div>
+  <div class="step new" role="listitem"><b>4. Fuse + rerank</b>Vector + keyword, then Jina reranker</div>
+  <div class="step" role="listitem"><b>5. Answer</b>Streamed from the chat model</div>
+</div>
+
+<h3>Step 1: question routing</h3>
+<p>A small, fast model (<code>openai/gpt-oss-20b</code>) receives the last six messages and the new question, and returns JSON:</p>
+<pre><code>{"query": "What changes do I need to make to the ingestion pipeline?",
+ "scope": "global",
+ "keywords": ["ingestion pipeline", "tree-sitter", "Jina", "pgvector"]}</code></pre>
+<p>That is real output from testing: the follow-up &ldquo;what changes i need to do?&rdquo; was resolved using the earlier turn about ingestion. If the router call fails, a keyword list (improve, refactor, architecture, overview, security and similar) decides the scope and the original question is used as-is. Questions that match those keywords are always treated as global, even if the router says otherwise.</p>
+
+<h3>Step 3: what each scope retrieves</h3>
+<div class="branch">
+  <div><h4><span class="tag acc">global</span>Project-level questions</h4><ol>
+    <li>Repo overview</li>
+    <li>File tree (up to 6,000 characters)</li>
+    <li>12 most relevant file summaries</li>
+    <li>6 code chunks from hybrid search</li>
+  </ol></div>
+  <div><h4><span class="tag good">specific</span>Targeted questions</h4><ol>
+    <li>10 code chunks from hybrid search</li>
+    <li>3 related file summaries for orientation</li>
+  </ol></div>
+</div>
+
+<h3>Step 4: hybrid search and reranking</h3>
+<p>Vector search finds code that <em>means</em> the same thing; keyword search finds code that contains the exact identifier. Each returns 30 candidates, which are merged with reciprocal rank fusion (each list contributes <code>1 / (60 + rank)</code> to a chunk&rsquo;s score). The merged top 30 are then reranked by <code>jina-reranker-v2-base-multilingual</code> using the existing Jina key. If the reranker is unavailable, the fused order is used.</p>
+<p>Keyword search uses a generated Postgres <code>tsvector</code> column over the file path and content, with a GIN index. Questions are reduced to identifier-like tokens joined with OR, with common words removed; underscores are split the same way Postgres splits them, so <code>save_chunks</code> matches.</p>
+<pre><code>"where is updateFilesProcessed called and how does save_chunks work"
+  &rarr;  updatefilesprocessed | called | save | chunks</code></pre>
+</section>
+
+<section id="prompt">
+<h2>6. Prompt changes</h2>
+<div class="compare">
+  <div class="before"><h4>Before</h4><ul>
+    <li>Answer using <em>only</em> the context.</li>
+    <li>Otherwise say exactly &ldquo;I couldn&rsquo;t find that&rdquo;.</li>
+    <li>No guidance for design or improvement questions.</li>
+  </ul></div>
+  <div class="after"><h4>After</h4><ul>
+    <li>Every factual claim about the code must come from the context, with file and line citations.</li>
+    <li>For improvement, design, security and performance questions, give prioritized recommendations, tie each one to specific files, and show short code examples.</li>
+    <li>&ldquo;I couldn&rsquo;t find that&rdquo; is only for factual questions with no support, and should mention the closest thing found.</li>
+  </ul></div>
+</div>
+<p>Chat history sent to the model is now capped (10 messages by default), and failures during retrieval or streaming return a short message instead of breaking the HTTP stream.</p>
+</section>
+
+<section id="fixes">
+<h2>7. Bugs fixed along the way</h2>
+<div class="table-scroll">
+<table>
+  <thead><tr><th>Where</th><th>Problem</th><th>Fix</th></tr></thead>
+  <tbody>
+    <tr><td><code>services/cloner.py</code></td><td>Printed the clone URL, which contains the user&rsquo;s GitHub access token, to the logs.</td><td>Removed the print.</td></tr>
+    <tr><td><code>services/chunker.py</code></td><td>Intermittent segfault from <code>node.end_point</code>.</td><td>Line numbers from byte offsets.</td></tr>
+    <tr><td><code>services/pipeline.py</code></td><td>Re-ingesting duplicated every chunk.</td><td>Delete the repo&rsquo;s chunks first.</td></tr>
+    <tr><td><code>main.py</code></td><td>Shutdown tested a Motor database for truth (raises), called a non-existent <code>close()</code> on it, and read <code>mongo_client</code>, which was never set when MongoDB was disabled.</td><td>Always set <code>mongo_client</code>; close only the client.</td></tr>
+    <tr><td><code>main.py</code> / <code>db/pgvector.py</code></td><td>The schema was not defined anywhere in the service.</td><td><code>ensure_schema</code> runs at startup and adds the tsvector column, indexes (GIN, HNSW, repo + chunk type) and <code>repo_overview</code> table if missing. Every statement is idempotent.</td></tr>
+  </tbody>
+</table>
+</div>
+</section>
+
+<section id="config">
+<h2>8. Configuration</h2>
+<p>New settings in <code>app.properties</code>, with matching defaults in <code>config.py</code>:</p>
+<pre><code>devlens.app.llm.chat_model=openai/gpt-oss-120b
+devlens.app.llm.router_model=openai/gpt-oss-20b
+devlens.app.llm.overview_model=openai/gpt-oss-120b
+devlens.app.rag.rerank_enabled=true
+devlens.app.rag.max_history_messages=10</code></pre>
+<p>The router was first set to <code>llama-3.1-8b-instant</code>, but that model is not available on the project&rsquo;s Groq account, so it uses <code>openai/gpt-oss-20b</code>, the small model the account does have.</p>
+
+<h3>Files changed</h3>
+<ul class="files">
+  <li><code>services/chunker.py</code></li>
+  <li><code>services/rag.py</code></li>
+  <li><code>services/pipeline.py</code></li>
+  <li><code>services/overview.py</code> (new)</li>
+  <li><code>services/embedder.py</code></li>
+  <li><code>services/cloner.py</code></li>
+  <li><code>db/pgvector.py</code></li>
+  <li><code>main.py</code></li>
+  <li><code>config.py</code></li>
+  <li><code>app.properties</code></li>
+</ul>
+</section>
+
+<section id="verify">
+<h2>9. How it was verified</h2>
+<div class="table-scroll">
+<table>
+  <thead><tr><th>Check</th><th>Result</th></tr></thead>
+  <tbody>
+    <tr><td>Chunked all 65 eligible files in the DevLens repo (Python service, Java backend, config and docs)</td><td>Every file produced chunks except the empty <code>models/responses.py</code>. Mix: 84 methods, 55 functions, 45 classes, 9 constructors, 57 module chunks, 14 windows.</td></tr>
+    <tr><td>Chunked the 31 JS/TS files in the frontend, 5 passes</td><td>No errors.</td></tr>
+    <tr><td>Stress test: 30 passes over the repo, and 1,000 passes over one file that crashed before</td><td>No crashes (the original chunker crashed on the same test).</td></tr>
+    <tr><td>Line numbers compared against the source file</td><td>First and last lines of every chunk matched.</td></tr>
+    <tr><td>New SQL (keyword search, filtered vector search, overview lookup) against the real Postgres</td><td>All queries ran. The table was empty, so result quality is not yet measured.</td></tr>
+    <tr><td>Question router against Groq</td><td>Follow-up resolved correctly; &ldquo;How to improve this project?&rdquo; routed to global, &ldquo;where is updateFilesProcessed called?&rdquo; routed to specific.</td></tr>
+  </tbody>
+</table>
+</div>
+<div class="note"><b>Not yet tested:</b> a full ingestion run (clone &rarr; overview) and a full streamed answer. Re-ingest a repo and ask the questions below to confirm end to end.</div>
+</section>
+
+<section id="next">
+<h2>10. Next steps</h2>
+<ol>
+  <li><b>Re-ingest every connected repo.</b> Existing indexes have no file summaries or overview, so global questions will fall back to code chunks only.</li>
+  <li><b>Smoke-test these questions</b> on a freshly indexed repo:
+    <ul>
+      <li>&ldquo;What does this project do?&rdquo;</li>
+      <li>&ldquo;How can I improve this project?&rdquo; then &ldquo;What changes do I need to make?&rdquo;</li>
+      <li>&ldquo;Where is <code>updateFilesProcessed</code> called?&rdquo;</li>
+    </ul>
+  </li>
+  <li><b>Known remaining bug:</b> when MongoDB is disabled, <code>mongo_db</code> is <code>None</code> and the status updates in <code>db/mongo.py</code> will fail, which stops ingestion.</li>
+  <li><b>Possible later improvements:</b> an atomic swap instead of delete-then-insert (so a repo stays searchable during re-indexing), and a small evaluation set of question/expected-file pairs to measure retrieval quality over time.</li>
+</ol>
+</section>
+
+<footer>DevLens &middot; devlens-ai service &middot; RAG improvements write-up</footer>
+</div>
+</body>
+</html>
