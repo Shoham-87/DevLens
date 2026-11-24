@@ -22,6 +22,7 @@ class Setting(BaseSettings):
     max_context_chars: int = Field(alias="devlens.app.rag.max_context_chars", default=12000)
     max_history_chars: int = Field(alias="devlens.app.rag.max_history_chars", default=3000)
     max_output_tokens: int = Field(alias="devlens.app.llm.max_output_tokens", default=2500)
+    guardrails_enabled: bool = Field(alias="devlens.app.rag.guardrails_enabled", default=True)
 
     @field_validator("excluded_dirs", "allowed_extensions", mode="before")
     @classmethod
