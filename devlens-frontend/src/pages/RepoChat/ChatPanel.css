@@ -72,6 +72,107 @@
   word-break: break-word;
 }
 
+.cp-md {
+  white-space: normal;
+}
+
+.cp-md > :first-child {
+  margin-top: 0;
+}
+
+.cp-md > :last-child {
+  margin-bottom: 0;
+}
+
+.cp-p {
+  margin: 0 0 var(--dl-space-sm);
+  white-space: pre-wrap;
+}
+
+.cp-h {
+  margin: var(--dl-space-md) 0 var(--dl-space-xs);
+  font-family: var(--dl-font-display);
+  font-weight: 650;
+  line-height: 1.3;
+  color: var(--dl-text-primary);
+}
+
+.cp-h1 { font-size: 1.12rem; }
+.cp-h2 { font-size: 1rem; padding-bottom: 4px; border-bottom: 1px solid var(--dl-border-subtle); }
+.cp-h3 { font-size: 0.92rem; }
+.cp-h4, .cp-h5, .cp-h6 { font-size: 0.85rem; color: var(--dl-text-secondary); }
+
+.cp-list {
+  margin: 0 0 var(--dl-space-sm);
+  padding-left: 1.3rem;
+}
+
+.cp-list li {
+  margin: 2px 0;
+}
+
+.cp-list li > .cp-p {
+  margin-bottom: 2px;
+}
+
+.cp-list .cp-list {
+  margin: 2px 0;
+}
+
+.cp-quote {
+  margin: 0 0 var(--dl-space-sm);
+  padding: 2px 0 2px 12px;
+  border-left: 3px solid rgba(var(--dl-primary-rgb), 0.4);
+  color: var(--dl-text-secondary);
+}
+
+.cp-rule {
+  margin: var(--dl-space-md) 0;
+  border: none;
+  border-top: 1px solid var(--dl-border-subtle);
+  opacity: 1;
+}
+
+.cp-link {
+  color: var(--dl-primary);
+  text-underline-offset: 2px;
+}
+
+.cp-table-wrap {
+  margin: 0 0 var(--dl-space-sm);
+  overflow-x: auto;
+  border: 1px solid var(--dl-border-subtle);
+  border-radius: var(--dl-radius-sm);
+}
+
+.cp-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.8rem;
+}
+
+.cp-table th,
+.cp-table td {
+  padding: 6px 10px;
+  border-bottom: 1px solid var(--dl-border-subtle);
+  vertical-align: top;
+  text-align: left;
+}
+
+.cp-table th {
+  background: var(--dl-bg-elevated);
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.cp-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.cp-table tbody tr:nth-child(even) td {
+  background: rgba(var(--dl-border-rgb), 0.06);
+}
+
 .cp-message--user .cp-message__body {
   padding: var(--dl-space-sm) 12px;
   background: var(--dl-bg-elevated);

@@ -37,6 +37,8 @@ Rules:
   give concrete, prioritized recommendations using your engineering knowledge, tie each one to
   specific files from the context, and show short code examples of the change where useful.
 - For project-level questions, use the repository overview and file tree to explain the big picture.
+- Format answers in GitHub-flavored Markdown: use headings for longer answers, bullet or numbered
+  lists for steps, tables when comparing items, and fenced code blocks with a language tag for code.
 - If a factual question cannot be answered from the context, say:
   "I couldn't find that in the indexed codebase." and mention what you did find that is closest."""
 
@@ -46,7 +48,8 @@ def create_llm(groq_key: str, model: str, streaming: bool = True) -> ChatGroq:
         model=model,
         api_key=groq_key,
         temperature=0,
-        streaming=streaming
+        streaming=streaming,
+        max_tokens=setting.max_output_tokens
     )
 
 
@@ -109,17 +112,24 @@ async def hybrid_search(pg_pool, query_vector: list[float], search_text: str, re
     return candidates[:limit]
 
 
-def format_context(chunks: list[dict], title: str = "Code chunks") -> str:
-    if not chunks:
+def format_context(chunks: list[dict], title: str = "Code chunks", budget: int | None = None) -> str:
+    if not chunks or (budget is not None and budget <= 0):
         return ""
     formatted_blocks = []
+    used = 0
     for index, chunk in enumerate(chunks, start=1):
         header = (
             f"[{index}] {chunk['file_path']} "
             f"(lines {chunk['line_start']}-{chunk['line_end']}) | "
             f"{chunk['language']} | {chunk['chunk_type']}"
         )
-        formatted_blocks.append(f"{header}\n----\n{chunk['content']}")
+        block = f"{header}\n----\n{chunk['content']}"
+        if budget is not None and used + len(block) > budget:
+            if formatted_blocks:
+                break
+            block = block[:budget]
+        formatted_blocks.append(block)
+        used += len(block) + 2
     return f"### {title}\n\n" + "\n\n".join(formatted_blocks)
 
 
@@ -127,24 +137,31 @@ async def build_context(routed: dict, repo_id: str, pg_pool, jina_key: str) -> s
     search_text = " ".join([routed["query"], *routed["keywords"]])
     query_vector = await embed_query(search_text, jina_key)
     sections = []
+    remaining = setting.max_context_chars
 
     if routed["scope"] == "global":
         overview = await get_repo_overview(pg_pool, repo_id)
         if overview:
-            sections.append(f"### Repository overview\n\n{overview['overview']}")
+            overview_text = f"### Repository overview\n\n{overview['overview']}"[:remaining // 3]
+            sections.append(overview_text)
+            remaining -= len(overview_text)
             if overview.get("file_tree"):
-                sections.append(f"### File tree\n\n{overview['file_tree'][:6000]}")
+                tree_text = f"### File tree\n\n{overview['file_tree']}"[:remaining // 4]
+                sections.append(tree_text)
+                remaining -= len(tree_text)
         summaries = await similarity_search(pg_pool, query_vector, repo_id, 12, include_types=["file_summary"])
         code = await hybrid_search(pg_pool, query_vector, search_text, repo_id, jina_key, 6,
                                    exclude_types=["file_summary"])
-        sections.append(format_context(summaries, "File summaries"))
-        sections.append(format_context(code, "Code chunks"))
+        summary_text = format_context(summaries, "File summaries", remaining // 2)
+        sections.append(summary_text)
+        sections.append(format_context(code, "Code chunks", remaining - len(summary_text)))
     else:
         code = await hybrid_search(pg_pool, query_vector, search_text, repo_id, jina_key, 10,
                                    exclude_types=["file_summary"])
         summaries = await similarity_search(pg_pool, query_vector, repo_id, 3, include_types=["file_summary"])
-        sections.append(format_context(code, "Code chunks"))
-        sections.append(format_context(summaries, "Related file summaries"))
+        code_text = format_context(code, "Code chunks", remaining * 4 // 5)
+        sections.append(code_text)
+        sections.append(format_context(summaries, "Related file summaries", remaining - len(code_text)))
 
     context = "\n\n".join(s for s in sections if s)
     return context or "No relevant code found in the indexed codebase for this question."
@@ -166,12 +183,21 @@ async def stream_rag_response(question:str, repo_id:str, history:list[dict], pg_
         yield "Sorry, I couldn't search the indexed codebase right now. Please try again."
         return
 
-    messages = [SystemMessage(content=SYSTEM_PROMPT)]
-    for msg in history:
+    history_messages = []
+    history_budget = setting.max_history_chars
+    for msg in reversed(history):
+        content = str(msg.get("content", ""))[:history_budget]
+        if not content:
+            break
         if msg.get("role") == "user":
-            messages.append(HumanMessage(content=msg.get("content", "")))
+            history_messages.insert(0, HumanMessage(content=content))
         elif msg.get("role") == "assistant":
-            messages.append(AIMessage(content=msg.get("content", "")))
+            history_messages.insert(0, AIMessage(content=content))
+        else:
+            continue
+        history_budget -= len(content)
+
+    messages = [SystemMessage(content=SYSTEM_PROMPT), *history_messages]
     messages.append(HumanMessage(content=f"Context:\n{context}\n\nQuestion: {question}"))
 
     llm = create_llm(groq_key, setting.chat_model)
