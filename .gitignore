@@ -35,6 +35,7 @@ build/
 ### Project Related ###
 .env
 node_modules/
+devlens-frontend/dist/
 
 ### Docker ###
 Dockerfile
